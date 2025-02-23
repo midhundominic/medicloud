@@ -1,0 +1,53 @@
+.userListContainer {
+    padding: 20px;
+  }
+  
+  
+  .userCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+.userCard.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  
+  
+  .userInfo {
+    flex-grow: 1;
+  }
+  
+  .userActions {
+    display: flex;
+    align-items: center;
+  }
+
+  .searchContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+  
+  .searchField {
+    width: 300px;
+  }
+  
+  .tableContainer {
+    margin-top: 20px;
+  }
+  
+  .disabledRow {
+    opacity: 0.6;
+  }
+  
+  .editButtons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}

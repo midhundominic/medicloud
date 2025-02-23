@@ -1,0 +1,12 @@
+.buttonContainer {
+    display: flex;
+    justify-content: end;
+    margin-bottom: 12px;
+  }
+  
+  .newButton {
+    max-width: fit-content;
+    padding: 4px 12px;
+    font-size: 14px;
+  }
+  

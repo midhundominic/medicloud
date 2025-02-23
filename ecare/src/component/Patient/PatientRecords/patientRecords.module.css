@@ -1,0 +1,101 @@
+.recordsContainer {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .recordAccordion {
+    margin-bottom: 16px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+  }
+  
+  .summaryContent {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 20px;
+  }
+  
+  .prescriptionDetails {
+    padding: 20px;
+  }
+  
+  .section {
+    margin-bottom: 24px;
+  }
+  
+  .section h3 {
+    color: #2c3e50;
+    margin-bottom: 12px;
+  }
+  
+  .section ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .section li {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  
+  .testItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  
+  .testActions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .pendingResult {
+    color: #e74c3c;
+    font-style: italic;
+  }
+
+  .actionButtons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+  
+  .downloadBtn {
+    background-color: #2196f3 !important;
+  }
+  
+  .viewContent {
+    margin-top: 16px;
+  }
+  
+  .pdfViewer {
+    border: none;
+    width: 100%;
+    height: 500px;
+  }
+
+  @media (max-width: 600px) {
+    .summaryContent {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .testItem {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .testActions {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }

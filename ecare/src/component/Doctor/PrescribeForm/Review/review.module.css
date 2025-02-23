@@ -1,0 +1,77 @@
+.reviewRoot {
+  display: grid;
+}
+
+.reviewForm {
+  display: grid;
+  gap: 20px;
+}
+
+.caption {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.section {
+  display: grid;
+}
+
+.reviewTextArea {
+  min-height: 150px;
+  padding: 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 18px;
+  height: auto;
+}
+
+.medicineRow {
+  display: grid;
+  grid-template-columns: 35% 15% 15% auto 100px 40px;
+  gap: 12px;
+  margin-top: 8px;
+  border-bottom: 1px solid #eaeaea;
+  padding: 8px 0;
+}
+
+.customeTextInput {
+  border-radius: 50px;
+}
+
+.customeTextInput .MuiOutlinedInput-root.MuiInputBase-sizeSmall {
+  border-radius: 50px;
+  padding: 0px 12px !important;
+}
+
+.customeTextInput .css-1sh6wjw-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 6px;
+}
+
+.medicalTests {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  border: 1.5px solid #eaeaea;
+  padding: 20px;
+  border-radius: 6px;
+}
+
+.btnContainer {
+  display: grid;
+  justify-content: end;
+}
+
+.customBtn {
+  width: max-content;
+  font-size: 16px;
+  padding: 6px 14px;
+}
+
+.deleteIcon {
+  color: #fa4b4b !important;
+}
+
+.deleteIcon:disabled {
+  color: rgba(0, 0, 0, 0.26) !important;
+}

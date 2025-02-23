@@ -1,0 +1,83 @@
+/* General page layout */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fa;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-top: 20px;
+    font-size: 24px;
+  }
+  
+  /* Container for leave requests */
+  .leave-request {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .leave-request:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Request details */
+  .leave-request p {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+  }
+  
+  .leave-request p span {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Buttons */
+  .leave-request button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .leave-request button:hover {
+    background-color: #45a049;
+  }
+  
+  .leave-request button.reject {
+    background-color: #f44336;
+  }
+  
+  .leave-request button.reject:hover {
+    background-color: #e53935;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .leave-request {
+      max-width: 90%;
+    }
+    
+    .leave-request p {
+      font-size: 14px;
+    }
+  
+    .leave-request button {
+      font-size: 12px;
+      padding: 8px 16px;
+    }
+  }
+  

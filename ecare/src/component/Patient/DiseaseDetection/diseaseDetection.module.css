@@ -1,0 +1,128 @@
+.container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.title {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+}
+
+.card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.inputSection {
+    padding: 2rem;
+    background: #f8fafc;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.chipContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    min-height: 50px;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px dashed #cbd5e1;
+}
+
+.chip {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    font-weight: 500 !important;
+}
+
+.predictButton {
+    background: linear-gradient(45deg, #3b82f6, #2563eb) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 2rem !important;
+    margin-top: 1rem !important;
+    transition: transform 0.2s !important;
+}
+
+.predictButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+}
+
+.resultCard {
+    padding: 2rem;
+    margin-top: 2rem;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.confidenceBar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+}
+
+.confidenceFill {
+    height: 100%;
+    background: linear-gradient(45deg, #3b82f6, #2563eb);
+    border-radius: 4px;
+    transition: width 0.5s ease-out;
+}
+
+.precautionList {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.precautionItem {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.precautionIcon {
+    margin-right: 0.75rem;
+    color: #3b82f6;
+}
+
+.errorMessage {
+    color: #ef4444;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: #fee2e2;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin: 1rem auto;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .inputSection, .resultCard {
+        padding: 1rem;
+    }
+}

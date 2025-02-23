@@ -1,0 +1,32 @@
+.datePickerRoot {
+  display: grid;
+  gap: 8px;
+}
+
+.labelWrapper {
+  display: flex;
+  gap: 2px;
+  color: #8590a3;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.datePickerRoot input[type="text"] {
+  font-size: 14px;
+  padding: 7px 12px;
+  color: #364760;
+  font-size: 14px;
+  font-style: normal;
+}
+
+.muiDatePickerRoot {
+  max-width: 10rem;
+}
+
+.errorText {
+  color: red;
+  font-size: 12px;
+}
+.required {
+  color: red;
+}

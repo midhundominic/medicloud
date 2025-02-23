@@ -1,0 +1,13 @@
+.buttonContainer {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 16px;
+  }
+  
+  .buttonContainer > button {
+    max-width: 72px;
+    padding: 3px;
+    font-size: 14px;
+  }
+  

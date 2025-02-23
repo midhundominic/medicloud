@@ -1,0 +1,58 @@
+.inputGroup {
+  margin-bottom: 1rem;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #000;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.labelWrapper {
+  display: flex;
+  gap: 2px;
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 8px 12px;
+  color: #364760;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: #007BFF; /* Blue border */
+  outline: none; /* Remove the default outline */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Optional: Adds a subtle blue glow */
+}
+
+.errorText {
+  color: red;
+  font-size: 12px;
+}
+.required {
+  color: red;
+}
+
+.inputError {
+  border-color: red;
+}
+.input {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}

@@ -1,0 +1,66 @@
+.prescriptionRoot {
+  display: grid;
+}
+
+/* user details */
+.userInfo {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  margin-top: 20px;
+  border: 1.5px solid #f6f6f6;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.leftContent {
+  display: flex;
+  gap: 12px;
+}
+
+.patientInfo {
+  display: grid;
+  height: fit-content;
+}
+
+.name {
+  font-weight: 600;
+}
+
+.patientData {
+  font-size: 14px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.icons {
+  width: 22px;
+  height: 22px;
+}
+
+.rightContent {
+  display: grid;
+  height: fit-content;
+  gap: 6px;
+  align-items: center;
+}
+
+.patientImage {
+  width: 90px;
+  height: 90px;
+}
+
+/* tab */
+.tabsRoot {
+  height: 40px !important;
+  min-height: 40px !important;
+}
+
+.tabRoot {
+  padding: 4px 8px !important; /* Adjust padding */
+  font-size: 16px !important; /* Customize font size */
+  font-weight: bold !important; /* Customize font weight */
+  text-transform: none !important; /* Remove uppercase transform */
+  text-align: left !important;
+}

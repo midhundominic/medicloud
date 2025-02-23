@@ -1,0 +1,75 @@
+.dashboard-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .dashboard-container h1 {
+    text-align: center;
+    color: #007bff;
+  }
+  
+  .patient-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+  
+  .patient-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: all 0.3s;
+  }
+  
+  .patient-list li:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .patient-list button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .patient-list button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Modal Styles */
+  .modal-content {
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 100%;
+    margin: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-content h2 {
+    margin-bottom: 20px;
+    color: #007bff;
+  }
+  
+  .modal-content button {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+  .modal-content button:hover {
+    background-color: #218838;
+  }

@@ -1,0 +1,51 @@
+.calendarRoot {
+  position: relative;
+}
+
+.viewButtons {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.iconButton {
+  border: 1px solid #2c3e50 !important;
+  border-radius: 4px !important;
+  padding: 6px !important;
+  background-color: #fff !important;
+  color: #2c3e50 !important;
+}
+
+.iconActiveButton {
+  composes: iconButton;
+  background-color: #eef5ff !important;
+  border: 1.5px solid #579bfe !important;
+}
+
+.iconButton:hover {
+  background-color: #e0e0e0 !important;
+}
+
+/* Heading */
+.calendarHeading {
+  display: grid;
+  color: #666;
+}
+
+.calendarDate {
+  font-size: 24px;
+  text-align: left;
+}
+
+.calendarDay {
+  font-size: 12px;
+  text-align: left;
+}
+
+.eventBox {
+  padding: 10px;
+  border-radius: 5px;
+  height: 100%;
+}

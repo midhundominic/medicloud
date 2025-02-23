@@ -1,0 +1,146 @@
+.docListRoot {
+  display: grid;
+  gap: 16px;
+  border: 2px solid #f6f6f6;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.listContainer {
+  display: grid;
+  gap: 16px;
+}
+
+.listContainer1 {
+  composes: listContainer;
+  grid-template-columns: 1fr;
+}
+
+.listContainer2 {
+  composes: listContainer;
+  grid-template-columns: 1fr 1fr;
+}
+
+.listContainer3 {
+  composes: listContainer;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.titleContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.iconsWrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.doctorCard {
+  display: flex;
+  gap: 16px;
+  border: 2px solid #f6f6f6;
+  border-radius: 8px;
+  padding: 20px;
+  padding: 9px;
+  cursor: pointer;
+}
+
+.selectedDocCard {
+  display: flex;
+  gap: 16px;
+  background-color: #eef5ff;
+  border: 2px solid #579bfe;
+  border-radius: 8px;
+  padding: 20px;
+  padding: 9px;
+  cursor: pointer;
+}
+
+.docProfile {
+  max-width: 60px;
+  max-height: 60px;
+  border-radius: 8px;
+}
+
+.docInfo {
+  display: grid;
+  height: fit-content;
+}
+
+.docName {
+  font-weight: 600;
+}
+
+.docCaption {
+  font-size: 12px;
+}
+
+
+.docInfo {
+  display: grid;
+  height: fit-content;
+  gap: 4px;
+}
+
+.docName {
+  font-weight: 600;
+  color: #333;
+}
+
+.docCaption {
+  font-size: 12px;
+  color: #666;
+}
+
+.ratingContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+}
+
+.starIcon {
+  font-size: 16px !important;
+}
+
+.ratingText {
+  font-size: 12px;
+  color: #666;
+  margin-left: 4px;
+}
+
+.experience {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.doctorCard, .selectedDocCard {
+  display: flex;
+  gap: 16px;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.doctorCard {
+  border: 2px solid #f6f6f6;
+  background-color: #fff;
+}
+
+.selectedDocCard {
+  background-color: #eef5ff;
+  border: 2px solid #579bfe;
+}
+
+.doctorCard:hover {
+  border-color: #e0e0e0;
+  background-color: #fafafa;
+}

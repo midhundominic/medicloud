@@ -1,0 +1,71 @@
+.leave-container {
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.leave-container h2 {
+  text-align: center;
+}
+
+.custom-date-picker {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px; /* Adjust font size */
+  color: #333; /* Text color */
+  background-color: white; /* Ensure background is white */
+  box-sizing: border-box;
+}
+
+.leave-container input[type="text"],
+.leave-container button {
+  /* width: 100%; */
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.leave-container button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.leave-container button:hover {
+  background-color: #45a049;
+}
+
+.leave-requests {
+  margin-top: 20px;
+}
+
+.leave-request {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.cancel-button {
+  background-color: #f44336; /* Red color for cancel button */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.cancel-button:hover {
+  background-color: #d32f2f; /* Darker red for hover effect */
+}

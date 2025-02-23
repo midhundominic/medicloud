@@ -1,0 +1,66 @@
+.appointmentsList {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.appointmentCard {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.appointmentCardContent {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.patientDetails p {
+  margin: 4px 0;
+  color: #555;
+}
+
+.appointmentActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+}
+
+.actionButton {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.actionButton:hover {
+  background-color: #0056b3;
+}
+
+.absentButton {
+  background-color: #dc3545;
+  margin-right: auto; /* Position to the left */
+}
+
+.absentButton:hover {
+  background-color: #c82333;
+}

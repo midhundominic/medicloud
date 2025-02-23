@@ -1,0 +1,109 @@
+/* appointments.css */
+.appointments-list {
+    padding: 20px;
+  }
+  
+  .appointment-card {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+  }
+  
+  .appointment-card button {
+    margin-right: 10px;
+  }
+  
+  .reschedule-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75); /* Dark translucent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .reschedule-modal {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    position: relative;
+  }
+  
+  .reschedule-modal h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  /* Add this to your CSS file to handle the layout */
+/* .appointment-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .doctor-image-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: 20px;
+  }
+  
+  .doctor-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+   */
+
+   .doctor-details {
+    text-align: left;
+    padding: 20px;
+}
+
+.reschedule-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+  }
+
+  .submit-btn:hover {
+    background-color: #0056b3;
+  }
+  /* appointment.css */
+.time-slot-btn {
+  margin: 5px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.time-slot-btn.selected {
+  background-color: #4caf50;
+  color: white;
+}
+
+.time-slot-btn.unavailable {
+  background-color: #f44336;
+  color: white;
+  cursor: not-allowed;
+}
+
+.time-slot-btn:disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}

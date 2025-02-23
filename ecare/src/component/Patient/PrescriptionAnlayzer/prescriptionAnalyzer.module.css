@@ -1,0 +1,228 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.container h2 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.uploadSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.fileInput {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border: 2px dashed #3498db;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.previewAndResults {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.imagePreview {
+    flex: 1;
+    max-width: 400px;
+}
+
+.imagePreview h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.imagePreview img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.results {
+    flex: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.results h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.analysisContainer {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.mainTitle {
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 24px;
+    text-align: center;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 12px;
+}
+
+.section {
+    margin-bottom: 24px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.sectionTitle {
+    color: #2c3e50;
+    font-size: 18px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.sectionContent {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.medicineItem {
+    background-color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 6px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.medicineName {
+    color: #34495e;
+    font-weight: 500;
+}
+
+.contentItem {
+    background-color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 6px;
+    color: #34495e;
+    line-height: 1.5;
+}
+
+.patientInfoSection {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.patientDetails {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.label {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.value {
+    color: #34495e;
+}
+
+.analyzeButton {
+    padding: 12px 24px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.analyzeButton:hover {
+    background-color: #2980b9;
+}
+
+.analyzeButton:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.error {
+    color: #e74c3c;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #e74c3c;
+    border-radius: 8px;
+    background-color: #fadbd8;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .previewAndResults {
+        flex-direction: column;
+    }
+
+    .imagePreview {
+        max-width: 100%;
+    }
+
+    .analysisContainer {
+        padding: 16px;
+    }
+
+    .section {
+        padding: 12px;
+    }
+
+    .medicineItem, 
+    .contentItem {
+        padding: 10px 12px;
+    }
+}
+
+.bold {
+    font-weight: 600;
+}
+
+.highlight {
+    background-color: #f1f8ff;
+}
+
+.warning {
+    color: #e74c3c;
+    font-style: italic;
+}
+
+.note {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 4px;
+}

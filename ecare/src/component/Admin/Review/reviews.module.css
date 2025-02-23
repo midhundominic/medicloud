@@ -1,0 +1,70 @@
+.reviewsContainer {
+    padding: 24px;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+  }
+  
+  .filterSection {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .searchField {
+    width: 300px;
+    background-color: white;
+  }
+  
+  .ratingFilter {
+    width: 150px;
+    background-color: white;
+  }
+  
+  .reviewsGrid {
+    margin-top: 16px;
+  }
+  
+  .reviewCard {
+    height: 100%;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .reviewCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reviewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  
+  .userInfo {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  .avatar {
+    background-color: #1976d2;
+  }
+  
+  .doctorInfo {
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  .reviewContent {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .reviewText {
+    margin: 12px 0;
+    font-style: italic;
+  }

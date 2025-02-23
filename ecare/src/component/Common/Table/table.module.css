@@ -1,0 +1,7 @@
+.tableContainer {
+  min-height: 174px;
+}
+
+.tableCell {
+  padding: 8px 12px !important;
+}

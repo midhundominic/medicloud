@@ -1,0 +1,43 @@
+.profileRoot {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #213547;
+  margin: 0;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 2px solid #f6f6f6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nameContainer {
+  display: grid;
+  font-size: 14px;
+}
+
+.profileName {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .titleContainer {
+    padding: 10px;
+  }
+}

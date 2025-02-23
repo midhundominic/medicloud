@@ -1,0 +1,30 @@
+.docAppointmentRoot {
+  display: grid;
+  gap: 20px;
+}
+
+/* Event popover */
+.popoverRoot {
+  display: grid;
+  padding: 16px;
+}
+
+.customButton {
+  font-size: 12px !important;
+  padding: 6px 10px !important;
+}
+
+.absentBtn {
+  composes: customButton;
+  background-color: #f67979 !important;
+}
+
+.startBtn {
+  composes: customButton;
+  background-color: #3b9cfa !important;
+}
+
+.updateBtn {
+  composes: customButton;
+  background-color: #4caf50 !important;
+}

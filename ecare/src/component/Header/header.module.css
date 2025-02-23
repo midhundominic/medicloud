@@ -1,0 +1,87 @@
+/* Header styling */
+.header {
+  display: none;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #364760;
+  color: white;
+}
+
+.hamburger {
+  display: none;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.rightSideContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Side panel styling */
+.sidePanel {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: -200px; /* Start off-screen */
+  width: 160px;
+  height: calc(100% - 40px);
+  background-color: #364760;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.sidePanel.open {
+  left: 0; /* Slide in */
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.panelNav {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Overlay for when the panel is open */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+}
+
+@media (max-width: 768px) {
+  .header {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .sidePanel {
+    display: block;
+  }
+}

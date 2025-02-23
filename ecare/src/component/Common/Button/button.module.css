@@ -1,0 +1,38 @@
+.buttonRoot {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btnPrimary {
+  composes: buttonRoot;
+  background-color: #357abd;
+  transition: background-color 0.3s ease;
+  color: #fff;
+}
+
+.btnPrimary:hover {
+  background-color: #245a91;
+}
+
+.btnPrimary:disabled {
+  background-color: #b0b0b0;
+  color: #7d7d7d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btnSecondary {
+  composes: buttonRoot;
+  background-color: #fff;
+  color: #444;
+  border: 1px solid #ddd;
+  transition: background-color 0.3s ease;
+}
+
+.btnSecondary:hover {
+  background-color: #f0f0f0;
+}

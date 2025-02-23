@@ -1,0 +1,62 @@
+.faceLogin {
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 500px;
+  }
+  
+  .webcamContainer {
+    position: relative;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  .webcam {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .verifyButton {
+    width: 100%;
+    padding: 12px 24px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .verifyButton:hover {
+    background-color: #218838;
+  }
+  
+  .verifyButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .loadingText {
+    text-align: center;
+    color: #666;
+    margin-top: 10px;
+  }
+  
+  .errorMessage {
+    color: #dc3545;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .successMessage {
+    color: #28a745;
+    text-align: center;
+    margin-top: 10px;
+  }

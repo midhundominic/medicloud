@@ -1,0 +1,153 @@
+.recordRoot {
+  display: grid;
+}
+.recordRoot {
+  padding: 20px;
+}
+
+.prescriptionDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionTitle {
+  font-weight: 600 !important;
+  margin-bottom: 10px !important;
+}
+
+.medicineSection, .testSection, .notesSection {
+  padding: 10px;
+}
+
+.medicineItem, .testItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.divider {
+  margin: 10px 0 !important;
+}
+
+.testItem > div {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.recordsContainer {
+  padding: 20px;
+}
+
+.tabs {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tabContent {
+  margin-top: 20px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.title {
+  margin-bottom: 24px !important;
+  color: #2c3e50;
+}
+
+.tableContainer {
+  margin-top: 20px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.viewContent {
+  margin-top: 16px;
+}
+
+.pdfViewer {
+  border: none;
+}
+
+.recordAccordion {
+  margin-bottom: 16px !important;
+}
+
+.summaryContent {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.prescriptionDetails {
+  padding: 20px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section h3 {
+  color: #2c3e50;
+  margin-bottom: 12px;
+}
+
+.section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.section li {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.medicineItem {
+  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+}
+
+.testItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.pendingResult {
+  color: #e74c3c;
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .recordsContainer {
+    padding: 16px;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .actionButtons button {
+    width: 100%;
+  }
+}

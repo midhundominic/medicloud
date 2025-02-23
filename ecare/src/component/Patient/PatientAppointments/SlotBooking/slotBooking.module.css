@@ -1,0 +1,93 @@
+.slotRoot {
+  display: grid;
+  gap: 16px;
+  border: 2px solid #f6f6f6;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.dateOptions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.dateBtn {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60px;
+}
+
+.dateBtnSelected {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.timeSlotOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.timeSlotBtn {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #f6f6f6;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-weight: 600;
+  border-radius: 30px;
+  border: none;
+}
+
+.timeSlotBtnSelected {
+  background-color: #eef5ff;
+  color: #579bfe;
+}
+
+.timeSlotBtnUnavailable {
+  background-color: #f8d7da;
+  color: #6c757d;
+  cursor: not-allowed;
+  border-color: #f5c6cb;
+}
+
+.btnContainer {
+  display: grid;
+  background-color: #f9fde6;
+  grid-template-columns: auto 150px;
+  align-items: center;
+  border: 2px solid #d9ee53;
+  border-radius: 12px;
+  padding-left: 16px;
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+.customeBtn {
+  background-color: #d9ee53 !important;
+  font-weight: 600;
+  color: black !important;
+}
+
+.slotLoader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+}

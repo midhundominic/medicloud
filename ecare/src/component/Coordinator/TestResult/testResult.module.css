@@ -1,0 +1,52 @@
+.uploadCard {
+  padding: 20px;
+  margin: 20px;
+}
+
+.testItem {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.uploadSection {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fileInput {
+  margin: 10px 0;
+}
+
+.remarksField {
+  margin: 10px 0;
+}
+
+.container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.testCard {
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.uploadSection {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.fileInput {
+  margin: 10px 0;
+}
+
+.remarksField {
+  width: 100%;
+}

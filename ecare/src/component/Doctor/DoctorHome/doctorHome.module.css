@@ -1,0 +1,64 @@
+.dashboardContainer {
+    padding: 24px;
+  }
+  
+  .titleContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  .title {
+    margin: 0;
+    color: #333;
+  }
+  
+  .notificationWrapper {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .notificationStatus {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background-color: #ff4444;
+    border-radius: 50%;
+  }
+  
+  .statCard {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .iconWrapper {
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  
+  .chartCard {
+    padding: 20px;
+    height: 100%;
+  }
+  
+  .appointmentsList {
+    padding: 20px;
+    height: 100%;
+  }
+  
+  .appointmentItem {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    &:last-child {
+      border-bottom: none;
+    }
+  }

@@ -1,0 +1,10 @@
+.root {
+  max-width: auto;
+  width: 100% !important;
+}
+
+.root .MuiOutlinedInput-root {
+  border-radius: 30px;
+  padding: 0 8px;
+}
+

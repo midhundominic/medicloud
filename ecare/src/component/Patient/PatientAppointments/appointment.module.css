@@ -1,0 +1,144 @@
+.doctorRoot {
+  display: grid;
+  gap: 20px;
+}
+
+.specRoot {
+  display: grid;
+  gap: 16px;
+  border: 2px solid #f6f6f6;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.specWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.specSelected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eef5ff;
+  color: #579bfe;
+  font-weight: 600;
+  padding: 6px 14px;
+  gap: 8px;
+  max-width: fit-content;
+  border-radius: 30px;
+  font-size: 14px;
+}
+
+.specItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f6f6f6;
+  padding: 6px 14px;
+  gap: 8px;
+  font-weight: 600;
+  max-width: fit-content;
+  border-radius: 30px;
+  font-size: 14px;
+}
+
+.specIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.mainContent {
+  display: grid;
+}
+
+.mainContentHaveDoc {
+  display: grid;
+  grid-template-columns: auto 250px;
+  gap: 16px;
+}
+
+.bookingDetails {
+  display: grid;
+  gap: 16px;
+}
+
+.doctorDetails {
+  display: grid;
+  height: fit-content;
+  justify-content: center;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  transition: right 0.3s ease;
+  padding: 24px;
+}
+
+.docProfile {
+  width: 175px;
+  height: 175px;
+  border-radius: 8px;
+  justify-self: center;
+  object-fit: cover;
+}
+
+.docName {
+  font-weight: 600;
+  font-size: 18px;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.docSpec {
+  font-size: 12px;
+  text-align: center;
+}
+
+.bioTitle {
+  margin: 20px 0 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.bio {
+  border: 2px solid #f6f6f6;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.readMoreButton {
+  font-size: 12px;
+  border: none;
+  color: #579bfe;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 600;
+}
+
+.ratingContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  margin-left: 60px;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+}
+
+.starIcon {
+  font-size: 16px !important;
+}
+
+@media (max-width: 769px) {
+  .doctorDetails {
+    display: none;
+  }
+
+  .mainContentHaveDoc {
+    grid-template-columns: 1fr;
+  }
+}

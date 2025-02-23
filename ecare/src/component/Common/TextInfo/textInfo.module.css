@@ -1,0 +1,15 @@
+.textInfoRoot {
+  display: grid;
+  gap: 4px;
+}
+
+.textInfoTitle {
+  color: #8590a3;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.textInfoInfo {
+  font-size: 14px;
+  color: #364760;
+}

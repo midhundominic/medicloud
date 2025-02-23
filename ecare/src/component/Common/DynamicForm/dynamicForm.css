@@ -1,0 +1,61 @@
+.dynamic-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .dynamic-form input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+  }
+  
+  .dynamic-form input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.2);
+  }
+  
+  .dynamic-form .form-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .dynamic-form .form-field input {
+    width: 70%;
+  }
+  
+  .dynamic-form .form-field button {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .dynamic-form .form-field button:hover {
+    background-color: #c82333;
+  }
+  
+  /* Buttons */
+  .dynamic-form .add-field-btn,
+  .dynamic-form .submit-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .dynamic-form .add-field-btn:hover,
+  .dynamic-form .submit-btn:hover {
+    background-color: #0056b3;
+  }

@@ -1,0 +1,50 @@
+.root {
+  height: 85vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  max-height: 300px;
+  justify-self: center;
+}
+
+.calendarIcon {
+  max-height: 250px;
+  justify-self: center;
+  margin-bottom: 30px;
+}
+
+.captionContainer {
+  display: grid;
+  margin: 0 0 20px 0;
+}
+
+.caption {
+  font-size: 14px;
+  text-align: center;
+}
+
+.customBtn {
+  border-radius: 30px;
+  max-width: 250px;
+  justify-self: center;
+}
+
+@media (max-width: 425px) {
+  .icon,
+  .calendarIcon {
+    max-height: 65vw;
+  }
+
+  .customBtn {
+    max-width: 82%;
+  }
+}

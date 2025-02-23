@@ -1,0 +1,160 @@
+.homeContainer {
+  padding: 24px;
+  background-color: #f4f7f9;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.welcomeSection {
+  flex: 1;
+}
+
+.greeting {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a237e;
+  margin: 0;
+}
+
+.subtitle {
+  color: #666;
+  margin: 4px 0 0;
+}
+
+.notificationBtn {
+  position: relative;
+  color: #1a237e !important;
+}
+
+.notificationBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background-color: #f44336;
+  border-radius: 50%;
+}
+
+.carouselWrapper {
+  margin-bottom: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.quickActionsContainer {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a237e;
+  margin-bottom: 16px;
+}
+
+.quickActionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.actionCard {
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.actionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.actionIcon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.actionTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.appointmentsSection {
+  margin-bottom: 32px;
+}
+
+.appointmentsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.appointmentCard {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.appointmentInfo h4 {
+  margin: 0 0 8px;
+  color: #1a237e;
+}
+
+.appointmentInfo p {
+  margin: 4px 0;
+  color: #666;
+}
+
+.noAppointments {
+  padding: 32px;
+  text-align: center;
+}
+
+.noAppointments p {
+  margin-bottom: 16px;
+  color: #666;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+.healthStatsSection {
+  margin-bottom: 32px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .homeContainer {
+    padding: 16px;
+  }
+
+  .greeting {
+    font-size: 24px;
+  }
+
+  .quickActionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .appointmentsGrid {
+    grid-template-columns: 1fr;
+  }
+}

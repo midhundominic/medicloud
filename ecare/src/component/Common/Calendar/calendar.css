@@ -1,0 +1,64 @@
+.fc .fc-toolbar-title {
+  color: #364760;
+  font-size: 22px;
+}
+
+/* now indicator */
+.fc .fc-timegrid-now-indicator-line {
+  border: 1px solid red !important;
+}
+
+/* Add the small red circle */
+.fc-timegrid-now-indicator-line::before {
+  content: ""; /* Required to create a pseudo-element */
+  position: absolute; /* Position it absolutely */
+  left: -1px; /* Adjust this value to move it closer or farther from the line */
+  top: 50%; /* Center it vertically */
+  transform: translateY(-50%); /* Offset it to center vertically */
+  width: 10px; /* Diameter of the circle */
+  height: 10px; /* Diameter of the circle */
+  background-color: red; /* Color of the circle */
+  border-radius: 50%; /* Make it round */
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5); /* Optional: add shadow for better visibility */
+  z-index: 5000;
+}
+
+/* Ensure calendar and custom line are positioned correctly */
+.calendar-wrapper {
+  position: relative !important;
+}
+
+.fc-timegrid-body {
+  position: relative !important; /* Needed for absolute positioning of the line */
+}
+
+/* Customize the day headers */
+.fc-scrollgrid-sync-inner {
+  float: left !important;
+}
+
+.fc-scroller {
+  overflow: hidden !important;
+}
+
+/* TimeRow in week view */
+.fc-timegrid-slot {
+  height: 70px !important; /* Adjust this value to change row height */
+}
+
+.fc-timegrid-slot-lane {
+  height: 70px !important;
+}
+
+/* view buttons in the toolbar */
+.fc-header-toolbar .fc-toolbar-chunk:nth-child(3) {
+  min-width: 128px;
+}
+
+/* event box */
+.fc-v-event,
+.fc-h-event {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
+}

@@ -1,0 +1,120 @@
+.buttons-container {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.google-login-btn,
+.login-btn {
+  display: flex;
+  flex: initial;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  background-color: #f44336;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: width 0.4s ease, border-radius 0.4s ease, padding 0.4s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.google-login-btn {
+  width: 50px;
+  border-radius: 50%;
+}
+
+.google-login-btn .google-icon {
+  font-size: 20px;
+  opacity: 1;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.google-login-btn .login-text {
+  white-space: nowrap;
+  opacity: 0;
+  display: none;
+  transform: translateX(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.google-login-btn:disabled {
+  background-color: #e6a1a1; /* Duller, muted version of #357abd */
+  color: #cccccc; /* Muted text color */
+  cursor: not-allowed; /* Shows that the button is not clickable */
+}
+
+.google-login-btn:hover {
+  flex: 1;
+  min-width: 0;
+  border-radius: 25px;
+  padding-left: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.google-login-btn:hover .google-icon {
+  opacity: 0;
+  display: none;
+  transform: translateX(-20px);
+}
+
+.google-login-btn:hover .login-text {
+  opacity: 1;
+  transform: translateX(0);
+  display: block;
+}
+
+/* Login button initial state */
+.login-btn {
+  flex: 1;
+  min-width: 0;
+  border-radius: 25px;
+  background-color: #357abd;
+  transition: width 0.4s ease, border-radius 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.login-btn:disabled {
+  background-color: #a3b9d4; /* Duller, muted version of #357abd */
+  color: #cccccc; /* Muted text color */
+  cursor: not-allowed; /* Shows that the button is not clickable */
+}
+
+.login-btn .arrow-icon {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  position: absolute;
+}
+
+.login-btn .login-text {
+  transition: opacity 0.3s ease, transform 0.4s ease;
+}
+
+/* Apply round style when state is true */
+.login-btn.round {
+  flex: initial;
+  width: 50px;
+  border-radius: 50%;
+  padding-left: 0;
+  justify-content: center;
+}
+
+.login-btn.round .login-text {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.login-btn.round .arrow-icon {
+  opacity: 1;
+  transform: translateX(0);
+}

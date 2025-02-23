@@ -1,0 +1,119 @@
+/* Container styling */
+.completedTestsContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  .title {
+    font-size: 26px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  
+  /* Card styling */
+  .appointmentCard {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border-left: 5px solid #1976d2;
+  }
+  
+  .patientName,
+  .doctorName,
+  .appointmentDate {
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+  }
+  
+  /* Test item styling */
+  .testItem {
+    background-color: #f1f5f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+  }
+  
+  .testName {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1976d2;
+    margin-bottom: 8px;
+  }
+  
+  .testResult {
+    font-size: 16px;
+    color: #333;
+  }
+  
+  /* Button styling */
+  .editButton,
+  .submitButton {
+    background-color: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .editButton {
+    margin-top: 8px;
+    width: fit-content;
+  }
+  
+  .editButton:hover {
+    background-color: #1258a7;
+  }
+  
+  .submitButton {
+    margin-left: 10px;
+  }
+  
+  .submitButton:hover {
+    background-color: #1258a7;
+  }
+  
+  /* Input styling */
+  .resultInputContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  
+  .resultInput {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  /* Responsive layout */
+  @media (max-width: 600px) {
+    .completedTestsContainer {
+      padding: 15px;
+    }
+  
+    .appointmentCard {
+      padding: 15px;
+    }
+  
+    .title {
+      font-size: 22px;
+    }
+  }
+  

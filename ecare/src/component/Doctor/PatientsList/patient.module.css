@@ -1,0 +1,61 @@
+.patientsListContainer {
+    padding: 24px;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+  }
+  
+  .pageTitle {
+    margin-bottom: 24px;
+    color: #1a237e;
+    font-weight: 600;
+  }
+  
+  .searchField {
+    margin-bottom: 24px;
+    background-color: white;
+    border-radius: 8px;
+  }
+  
+  .patientsGrid {
+    margin-top: 16px;
+  }
+  
+  .patientCard {
+    height: 100%;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .patientCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .avatar {
+    background-color: #1976d2;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .patientName {
+    margin-bottom: 16px;
+  }
+  
+  .patientInfo {
+    margin: 16px 0;
+  }
+  
+  .historyButton {
+    margin-top: 16px;
+  }
+  
+  .medicinesList {
+    margin: 8px 0;
+    padding-left: 20px;
+  }
