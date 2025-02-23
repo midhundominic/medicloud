@@ -47,7 +47,9 @@ const signin = async (req, res) => {
         res.cookie('token', token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          maxAge: 24 * 60 * 60 * 1000 // 24 hours
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          maxAge: 24 * 60 * 60 * 1000,
+          domain: process.env.NODE_ENV === 'production' ? 'medicloud-c2l8.onrender.com' : 'localhost'
         });
 
         return res.status(201).json({
@@ -94,7 +96,9 @@ const signin = async (req, res) => {
         res.cookie('token', token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          maxAge: 24 * 60 * 60 * 1000 // 24 hours
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          maxAge: 24 * 60 * 60 * 1000,
+          domain: process.env.NODE_ENV === 'production' ? 'medicloud-c2l8.onrender.com' : 'localhost'
         });
 
         return res.status(201).json({
@@ -142,7 +146,9 @@ const signin = async (req, res) => {
         res.cookie('token', token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          maxAge: 24 * 60 * 60 * 1000 // 24 hours
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          maxAge: 24 * 60 * 60 * 1000,
+          domain: process.env.NODE_ENV === 'production' ? 'medicloud-c2l8.onrender.com' : 'localhost'
         });
 
         return res.status(201).json({
@@ -189,7 +195,9 @@ const signin = async (req, res) => {
         res.cookie('token', token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          maxAge: 24 * 60 * 60 * 1000 // 24 hours
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          maxAge: 24 * 60 * 60 * 1000,
+          domain: process.env.NODE_ENV === 'production' ? 'medicloud-c2l8.onrender.com' : 'localhost'
         });
 
         return res.status(201).json({
