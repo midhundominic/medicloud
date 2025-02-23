@@ -44,11 +44,11 @@ const signin = async (req, res) => {
         }
 
         // Set HTTP-only cookie
-        res.cookie('token', token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        });
+        // res.cookie('token', token, {
+        //   httpOnly: true,
+        //   secure: process.env.NODE_ENV === 'production',
+        //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        // });
 
         return res.status(201).json({
           message: "Login Successful",
@@ -91,11 +91,11 @@ const signin = async (req, res) => {
         }
 
         // Set HTTP-only cookie
-        res.cookie('token', token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        });
+        // res.cookie('token', token, {
+        //   httpOnly: true,
+        //   secure: process.env.NODE_ENV === 'production',
+        //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        // });
 
         return res.status(201).json({
           message: "Login Successful",
@@ -139,11 +139,11 @@ const signin = async (req, res) => {
         }
 
         // Set HTTP-only cookie
-        res.cookie('token', token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        });
+        // res.cookie('token', token, {
+        //   httpOnly: true,
+        //   secure: process.env.NODE_ENV === 'production',
+        //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        // });
 
         return res.status(201).json({
           message: "Login Successful",
@@ -186,11 +186,11 @@ const signin = async (req, res) => {
         }
 
         // Set HTTP-only cookie
-        res.cookie('token', token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        });
+        // res.cookie('token', token, {
+        //   httpOnly: true,
+        //   secure: process.env.NODE_ENV === 'production',
+        //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        // });
 
         return res.status(201).json({
           message: "Login Successful",
@@ -227,11 +227,11 @@ const logout = async (req, res) => {
       }
 
       // Clear HTTP-only cookie
-      res.clearCookie('token', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-      });
+      // res.clearCookie('token', {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production',
+      //   sameSite: 'strict'
+      // });
       
       return res.status(201).json({
         success: true,
