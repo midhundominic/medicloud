@@ -10,10 +10,24 @@ const faceAuthRoutes = require('./Routes/faceAuthRoutes');
 const mlRoutes = require('./Routes/mlRoutes');
 
 const app = express();
-const allowedOrigin = 'https://medicloud-c2l8.onrender.com';
 
 // Enable CORS for all routes
-app.use(cors());
+const allowedOrigins = ['https://mediclouds.netlify.app', 'https://medicloud-c2l8.onrender.com'];
+
+// Enable CORS for all routes
+app.use(cors({
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true); // Allow the origin
+    } else {
+      callback(new Error('Not allowed by CORS')); // Reject the request
+    }
+  },
+  credentials: true, // Allow credentials (cookies, headers, etc.)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(sessionMiddleware);
 
 // Middleware
