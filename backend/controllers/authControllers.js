@@ -46,10 +46,10 @@ const signin = async (req, res) => {
         // Set HTTP-only cookie
         res.cookie('token', token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          secure: true,
+          sameSite: 'none',
           maxAge: 24 * 60 * 60 * 1000,
-          domain: process.env.NODE_ENV === 'production' ? 'medicloud-c2l8.onrender.com' : 'localhost'
+          domain: process.env.NODE_ENV === 'production' ? '.netlify.app' : 'localhost'
         });
 
         return res.status(201).json({
@@ -60,7 +60,6 @@ const signin = async (req, res) => {
             name: patient.name,
             userId: patient._id,
           },
-          token: token,
         });
       });
     }
@@ -95,10 +94,10 @@ const signin = async (req, res) => {
         // Set HTTP-only cookie
         res.cookie('token', token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          secure: true,
+          sameSite: 'none',
           maxAge: 24 * 60 * 60 * 1000,
-          domain: process.env.NODE_ENV === 'production' ? 'medicloud-c2l8.onrender.com' : 'localhost'
+          domain: process.env.NODE_ENV === 'production' ? '.netlify.app' : 'localhost'
         });
 
         return res.status(201).json({
@@ -110,7 +109,6 @@ const signin = async (req, res) => {
             lastName: doctor.lastName,
             doctorId: doctor._id,
           },
-          token: token,
         });
       });
     }
@@ -145,10 +143,10 @@ const signin = async (req, res) => {
         // Set HTTP-only cookie
         res.cookie('token', token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          secure: true,
+          sameSite: 'none',
           maxAge: 24 * 60 * 60 * 1000,
-          domain: process.env.NODE_ENV === 'production' ? 'medicloud-c2l8.onrender.com' : 'localhost'
+          domain: process.env.NODE_ENV === 'production' ? '.netlify.app' : 'localhost'
         });
 
         return res.status(201).json({
@@ -160,7 +158,6 @@ const signin = async (req, res) => {
             firstName: coordinator.firstName,
             lastName: coordinator.lastName,
           },
-          token: token,
         });
       });
     }
@@ -194,10 +191,10 @@ const signin = async (req, res) => {
         // Set HTTP-only cookie
         res.cookie('token', token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+          secure: true,
+          sameSite: 'none',
           maxAge: 24 * 60 * 60 * 1000,
-          domain: process.env.NODE_ENV === 'production' ? 'medicloud-c2l8.onrender.com' : 'localhost'
+          domain: process.env.NODE_ENV === 'production' ? '.netlify.app' : 'localhost'
         });
 
         return res.status(201).json({
@@ -208,7 +205,6 @@ const signin = async (req, res) => {
             name: laboratory.name,
             userId: laboratory._id,
           },
-          token: token,
         });
       });
     }
