@@ -6,7 +6,7 @@ const sessionMiddleware = session({
     saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
+        httpsOnly: true,
         maxAge: 24 * 60 * 60 * 1000
     }
 });
