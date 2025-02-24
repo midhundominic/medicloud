@@ -9,6 +9,7 @@ const biometricRoutes = require('./Routes/biometricRoutes');
 const faceAuthRoutes = require('./Routes/faceAuthRoutes');
 const mlRoutes = require('./Routes/mlRoutes');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 
 const app = express();
 
