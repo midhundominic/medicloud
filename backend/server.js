@@ -8,6 +8,7 @@ const sessionMiddleware = require('./middleware/session');
 const biometricRoutes = require('./Routes/biometricRoutes');
 const faceAuthRoutes = require('./Routes/faceAuthRoutes');
 const mlRoutes = require('./Routes/mlRoutes');
+const session = require('express-session');
 
 const app = express();
 
