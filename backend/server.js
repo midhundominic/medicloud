@@ -18,7 +18,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(sessionMiddleware);
+// app.use(sessionMiddleware);
 
 // Middleware
 app.use(express.json( { limit: "50mb" } )); // Parse JSON bodies
