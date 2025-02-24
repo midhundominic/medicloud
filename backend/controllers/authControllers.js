@@ -37,11 +37,11 @@ const signin = async (req, res) => {
       // req.session.role = patient.role;
       // req.session.email = patient.email;
 
-      return req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).json({ message: 'Session initialization failed' });
-        }
+      // return req.session.save((err) => {
+      //   if (err) {
+      //     console.error('Session save error:', err);
+      //     return res.status(500).json({ message: 'Session initialization failed' });
+      //   }
 
         // Set HTTP-only cookie
         // res.cookie('token', token, {
@@ -60,7 +60,7 @@ const signin = async (req, res) => {
           },
           token: token,
         });
-      });
+      // });
     }
 
     // Check in Doctor collection
