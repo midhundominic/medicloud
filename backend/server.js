@@ -18,6 +18,23 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'midhun12345',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    ttl: 24 * 60 * 60, // Session TTL (1 day)
+    autoRemove: 'native'
+  }),
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  }
+}));
+
 // app.use(sessionMiddleware);
 
 // Middleware
