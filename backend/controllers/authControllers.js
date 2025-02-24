@@ -33,9 +33,9 @@ const signin = async (req, res) => {
       );
 
       // Set up session
-      req.session.userId = patient._id;
-      req.session.role = patient.role;
-      req.session.email = patient.email;
+      // req.session.userId = patient._id;
+      // req.session.role = patient.role;
+      // req.session.email = patient.email;
 
       return req.session.save((err) => {
         if (err) {
@@ -80,9 +80,9 @@ const signin = async (req, res) => {
       );
 
       // Set up session
-      req.session.userId = doctor._id;
-      req.session.role = doctor.role;
-      req.session.email = doctor.email;
+      // req.session.userId = doctor._id;
+      // req.session.role = doctor.role;
+      // req.session.email = doctor.email;
 
       return req.session.save((err) => {
         if (err) {
@@ -128,9 +128,9 @@ const signin = async (req, res) => {
       );
 
       // Set up session
-      req.session.userId = coordinator._id;
-      req.session.role = coordinator.role;
-      req.session.email = coordinator.email;
+      // req.session.userId = coordinator._id;
+      // req.session.role = coordinator.role;
+      // req.session.email = coordinator.email;
 
       return req.session.save((err) => {
         if (err) {
@@ -174,10 +174,10 @@ const signin = async (req, res) => {
         { expiresIn: "24h" }
       );
 
-      // Set up session
-      req.session.userId = laboratory._id;
-      req.session.role = laboratory.role;
-      req.session.email = laboratory.email;
+      // // Set up session
+      // req.session.userId = laboratory._id;
+      // req.session.role = laboratory.role;
+      // req.session.email = laboratory.email;
 
       return req.session.save((err) => {
         if (err) {
