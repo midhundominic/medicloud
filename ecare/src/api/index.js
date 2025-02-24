@@ -3,7 +3,7 @@ import { toast, Slide } from "react-toastify";
 
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:5001/api",
+  baseURL: "https://medicloud-j10x.onrender.com/api",
   withCredentials: true,
   timeout: 30000, // Optional: Set timeout
   headers: {

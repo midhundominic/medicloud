@@ -20,6 +20,7 @@ import logo from "../../assets/images/logo.png";
 import useAuth from "../../component/Authentication"
 
 const SideNav = () => {
+  debugger;
   useAuth();
   const [activeNav, setActiveNav] = useState(1);
   const [userData, setUserData] = useState(null);
