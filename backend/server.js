@@ -8,8 +8,7 @@ const sessionMiddleware = require('./middleware/session');
 const biometricRoutes = require('./Routes/biometricRoutes');
 const faceAuthRoutes = require('./Routes/faceAuthRoutes');
 const mlRoutes = require('./Routes/mlRoutes');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
+
 
 const app = express();
 
@@ -18,27 +17,10 @@ app.use(cors({
   origin: process.env.FRONTEND_URL || 'https://mediclouds.netlify.app',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['set-cookie']
-}));
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'midhun12345',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    ttl: 24 * 60 * 60, // Session TTL (1 day)
-    autoRemove: 'native'
-  }),
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-  }
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// app.use(sessionMiddleware);
+app.use(sessionMiddleware);
 
 // Middleware
 app.use(express.json( { limit: "50mb" } )); // Parse JSON bodies
