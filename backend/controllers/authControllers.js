@@ -161,30 +161,5 @@ const signin = async (req, res) => {
   }
 };
 
-// Add logout controller
-const logout = async (req, res) => {
-  try {
-    // Clear session
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Session destruction error:', err);
-        return res.status(500).json({ 
-          success: false,
-          message: 'Logout failed' 
-        });
-      }
-      return res.status(201).json({
-        success: true,
-        message: "Logged out successfully"
-      });
-    });
-  } catch (error) {
-    console.error("Logout error:", error);
-    res.status(500).json({ 
-      success: false,
-      message: "Server error during logout" 
-    });
-  }
-};
 
-module.exports = { signin, logout };
+module.exports = { signin };
