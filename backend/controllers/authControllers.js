@@ -32,23 +32,6 @@ const signin = async (req, res) => {
         { expiresIn: "24h" }
       );
 
-      // Set up session
-      // req.session.userId = patient._id;
-      // req.session.role = patient.role;
-      // req.session.email = patient.email;
-
-      // return req.session.save((err) => {
-      //   if (err) {
-      //     console.error('Session save error:', err);
-      //     return res.status(500).json({ message: 'Session initialization failed' });
-      //   }
-
-        // Set HTTP-only cookie
-        // res.cookie('token', token, {
-        //   httpOnly: true,
-        //   secure: process.env.NODE_ENV === 'production',
-        //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        // });
 
         return res.status(201).json({
           message: "Login Successful",
@@ -60,8 +43,7 @@ const signin = async (req, res) => {
           },
           token: token,
         });
-      // });
-    }
+     }
 
     // Check in Doctor collection
     const doctor = await DoctorModel.findOne({ email });
