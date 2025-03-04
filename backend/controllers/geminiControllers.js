@@ -165,8 +165,8 @@ const getChatHistory = async (req, res) => {
             });
         }
 
-        const userId = req.user.userId;
-        const history = await ChatMessage.find({ userId })
+        const { patientId } = req.params;
+        const history = await ChatMessage.find({ patientId })
             .sort({ timestamp: 1 })
             .limit(50);
 

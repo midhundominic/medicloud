@@ -198,7 +198,7 @@ router.get('/chat/history', authMiddleware, chatControlers.getChatHistory);
 
 //Gemini
 router.post('/gemini/chat', authMiddleware, geminiControllers.chatWithGemini);
-router.get('/gemini/chat/history', authMiddleware, geminiControllers.getChatHistory);
+router.get('/gemini/chat/history/:patientId', authMiddleware, geminiControllers.getChatHistory);
 
 //Lab test
 router.get('/laboratory/tests',labTestControllers.getAllTests);
