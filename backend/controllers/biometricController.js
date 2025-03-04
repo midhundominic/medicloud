@@ -246,17 +246,33 @@ exports.verifyAuthentication = async (req, res) => {
     const { credential, authId } = req.body;
     console.log("Received credential:", JSON.stringify(credential, null, 2));
 
+    // Check if credential and its response are defined
+    if (!credential || !credential.response) {
+      return res.status(400).json({ 
+        error: 'Missing credential or response',
+        details: {
+          hasCredential: !!credential,
+          hasResponse: !!credential?.response,
+          authId
+        }
+      });
+    }
+
+    // Check if authenticatorData is defined
+    if (!credential.response.authenticatorData) {
+      return res.status(400).json({ 
+        error: 'Missing authenticatorData in response',
+        authId
+      });
+    }
+
     // Get the challenge using authId
     const expectedChallenge = authenticationChallenges.get(authId);
 
-    if (!credential || !expectedChallenge) {
+    if (!expectedChallenge) {
       return res.status(400).json({ 
-        error: 'Missing credential or challenge',
-        details: {
-          hasCredential: !!credential,
-          hasChallenge: !!expectedChallenge,
-          authId
-        }
+        error: 'Missing challenge',
+        authId
       });
     }
 
