@@ -251,7 +251,12 @@ exports.verifyAuthentication = async (req, res) => {
 
     if (!credential || !expectedChallenge) {
       return res.status(400).json({ 
-        error: 'Missing credential or challenge'
+        error: 'Missing credential or challenge',
+        details: {
+          hasCredential: !!credential,
+          hasChallenge: !!expectedChallenge,
+          authId
+        }
       });
     }
 
@@ -290,18 +295,34 @@ exports.verifyAuthentication = async (req, res) => {
       publicKeyBuffer = Buffer.from(storedCredential.publicKey.toString('base64'), 'base64');
     }
 
-    const verification = await verifyAuthenticationResponse({
-      response: credential,
+    // Prepare verification data
+    const verificationData = {
+      response: {
+        authenticatorData: credential.response.authenticatorData,
+        clientDataJSON: credential.response.clientDataJSON,
+        signature: credential.response.signature,
+        userHandle: credential.response.userHandle
+      },
       expectedChallenge: Buffer.from(expectedChallenge).toString('base64url'),
       expectedOrigin: "https://mediclouds.netlify.app",
       expectedRPID: "mediclouds.netlify.app",
       authenticator: {
         credentialPublicKey: publicKeyBuffer,
         credentialID: Buffer.from(storedCredential.credentialID, 'base64url'),
-        counter: storedCredential.counter
+        counter: storedCredential.counter || 0
       },
       requireUserVerification: false
+    };
+
+    console.log('Verification data:', {
+      ...verificationData,
+      authenticator: {
+        ...verificationData.authenticator,
+        credentialPublicKey: '<buffer>',
+      }
     });
+
+    const verification = await verifyAuthenticationResponse(verificationData);
 
     if (verification.verified) {
       // Update the counter
@@ -343,7 +364,8 @@ exports.verifyAuthentication = async (req, res) => {
       details: {
         hasCredential: !!req.body.credential,
         hasChallenge: !!authenticationChallenges.size,
-        storedCredential: !!storedCredential
+        storedCredential: !!storedCredential,
+        credentialResponse: req.body.credential?.response
       }
     });
   }
