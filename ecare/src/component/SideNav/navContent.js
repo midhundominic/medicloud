@@ -28,12 +28,12 @@ export const NAV_CONTENT_PATIENT = [
     link: ROUTES.PATIENT_APPOINTMENT,
     icon: CalendarMonthIcon,
   },
-  // {
-  //   id: 3,
-  //   title: "Consultation",
-  //   link: ROUTES.PATIENT_CONSULTATION,
-  //   icon: VideoChatIcon,
-  // },
+  {
+    id: 3,
+    title: "Consultation",
+    link: ROUTES.PATIENT_CONSULTATION,
+    icon: VideoChatIcon,
+  },
   {
     id: 4,
     title: "Bookings",

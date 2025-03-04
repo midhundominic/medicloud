@@ -230,19 +230,30 @@ const VirtualHealthAssistant = () => {
               <TimelineContent>
                 <Card className={styles.timelineCard}>
                   <CardContent>
-                    <Typography variant="h6">Health Status</Typography>
-                    <Typography>{analysis.aiAnalysis}</Typography> {/* Show AI analysis */}
-                    <Box mt={1}>
+                    <Typography variant="h6" gutterBottom>Health Status</Typography>
+                    <div 
+                      className={styles.aiAnalysis} 
+                      dangerouslySetInnerHTML={{ 
+                        __html: analysis.aiAnalysis.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                          .split('\n').join('<br />')
+                      }} 
+                    />
+                    <Box mt={2}>
                       {analysis.risks && analysis.risks.length > 0 ? (
-                        analysis.risks.map((risk, index) => (
-                          <Chip
-                            key={index}
-                            label={risk}
-                            color="warning"
-                            variant="outlined"
-                            className={styles.chip}
-                          />
-                        ))
+                        <div>
+                          <Typography variant="subtitle1" gutterBottom>Identified Risks:</Typography>
+                          <Box display="flex" flexWrap="wrap" gap={1}>
+                            {analysis.risks.map((risk, index) => (
+                              <Chip
+                                key={index}
+                                label={risk}
+                                color="warning"
+                                variant="outlined"
+                                className={styles.chip}
+                              />
+                            ))}
+                          </Box>
+                        </div>
                       ) : (
                         <Typography>No specific health risks identified.</Typography>
                       )}
@@ -251,7 +262,7 @@ const VirtualHealthAssistant = () => {
                 </Card>
               </TimelineContent>
             </TimelineItem>
-  
+
             <TimelineItem>
               <TimelineSeparator>
                 <TimelineDot color="secondary">
@@ -262,21 +273,23 @@ const VirtualHealthAssistant = () => {
               <TimelineContent>
                 <Card className={styles.timelineCard}>
                   <CardContent>
-                    <Typography variant="h6">Diet Recommendations</Typography>
-                    {analysis.recommendations?.length > 0 ? (
-                      <ul className={styles.recommendationList}>
-                        {analysis.recommendations.map((item, index) => (
-                          <li key={index}>{item}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <Typography>No specific diet recommendations available.</Typography>
-                    )}
+                    <Typography variant="h6" gutterBottom>Diet Recommendations</Typography>
+                    <Typography variant="body1" paragraph>
+                      Based on your health metrics, here are some dietary suggestions:
+                    </Typography>
+                    {analysis.recommendations?.filter(rec => 
+                      !rec.toLowerCase().includes('exercise') && 
+                      !rec.toLowerCase().includes('workout')
+                    ).map((item, index) => (
+                      <Typography key={index} component="div" className={styles.recommendation}>
+                        • {item}
+                      </Typography>
+                    ))}
                   </CardContent>
                 </Card>
               </TimelineContent>
             </TimelineItem>
-  
+
             <TimelineItem>
               <TimelineSeparator>
                 <TimelineDot color="success">
@@ -287,13 +300,28 @@ const VirtualHealthAssistant = () => {
               <TimelineContent>
                 <Card className={styles.timelineCard}>
                   <CardContent>
-                    <Typography variant="h6">Exercise Plan</Typography>
-                    {analysis.exercisePlan?.length > 0 ? (
-                      <ul className={styles.recommendationList}>
-                        {analysis.exercisePlan.map((item, index) => (
-                          <li key={index}>{item}</li>
-                        ))}
-                      </ul>
+                    <Typography variant="h6" gutterBottom>Exercise Plan</Typography>
+                    {analysis.exercisePlan ? (
+                      <Box>
+                        <Typography variant="subtitle1" gutterBottom>
+                          Recommended Exercise Program:
+                        </Typography>
+                        <Typography variant="body1" className={styles.exerciseDetail}>
+                          <strong>Type:</strong> {analysis.exercisePlan.type}
+                        </Typography>
+                        <Typography variant="body1" className={styles.exerciseDetail}>
+                          <strong>Intensity:</strong> {analysis.exercisePlan.intensity}
+                        </Typography>
+                        <Typography variant="body1" className={styles.exerciseDetail}>
+                          <strong>Duration:</strong> {analysis.exercisePlan.duration}
+                        </Typography>
+                        <Typography variant="body1" className={styles.exerciseDetail}>
+                          <strong>Frequency:</strong> {analysis.exercisePlan.frequency}
+                        </Typography>
+                        <Typography variant="body1" className={styles.exerciseDetail}>
+                          <strong>Precautions:</strong> {analysis.exercisePlan.precautions}
+                        </Typography>
+                      </Box>
                     ) : (
                       <Typography>No specific exercise plan available.</Typography>
                     )}
@@ -302,7 +330,7 @@ const VirtualHealthAssistant = () => {
               </TimelineContent>
             </TimelineItem>
           </Timeline>
-  
+
           {analysis.urgentCare && (
             <Alert severity="warning" className={styles.alert}>
               {analysis.urgentCare}

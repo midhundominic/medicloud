@@ -21,8 +21,6 @@ import {
   verifyBiometricAuth 
 } from '../../services/biometricServices';
 import { startAuthentication } from '@simplewebauthn/browser';
-import FaceLogin from "./FaceLogin";
-import Button from '../Common/Button'
 
 const auth = getAuth(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
@@ -59,40 +57,6 @@ const Login = () => {
     return errors;
   };
   
-  // const handleFaceLogin = async (verificationResult) => {
-  //   try {
-  //     setIsLoading(true);
-      
-  //     if (verificationResult.verified) {
-  //       const userData = verificationResult.user;
-        
-  //       // Store user data and token
-  //       localStorage.setItem("token", verificationResult.token);
-  //       localStorage.setItem("userData", JSON.stringify({
-  //         email: userData.email,
-  //         name: userData.name,
-  //         role: userData.role,
-  //         userId: userData.userId,
-  //       }));
-  
-  //       // Update context and navigate
-  //       if (userData.role === 1) {
-  //         setPatient(userData);
-  //         navigate(ROUTES.PATIENT_HOME);
-  //       } else {
-  //         setDoctor(userData);
-  //         navigate(ROUTES.DOCTOR_HOME);
-  //       }
-  
-  //       toast.success("Login Successful");
-  //     }
-  //   } catch (error) {
-  //     console.error('Face login error:', error);
-  //     toast.error(error.message || 'Face login failed');
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const handleBiometricLogin = async () => {
     try {

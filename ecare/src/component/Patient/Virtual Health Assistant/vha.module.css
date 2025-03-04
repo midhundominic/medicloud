@@ -36,9 +36,14 @@
 }
 
 .timelineCard {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease-in-out;
   border-radius: 8px !important;
   margin: 1rem 0;
+}
+
+.timelineCard:hover {
+  transform: translateY(-2px);
 }
 
 .recommendationList {
@@ -60,11 +65,13 @@
 }
 
 .chip {
-  margin: 0.25rem !important;
+  margin: 4px;
+  background-color: rgba(255, 152, 0, 0.1);
 }
 
 .alert {
-  margin: 1rem 0 !important;
+  margin: 16px 0;
+  border-radius: 8px;
 }
 
 .content {
@@ -143,4 +150,31 @@
 .historyCard:hover {
   background-color: #e0e0e0;
   transition: background-color 0.3s ease;
+}
+
+.aiAnalysis {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.aiAnalysis strong {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.recommendation {
+  margin: 8px 0;
+  padding: 4px 0;
+  color: #555;
+}
+
+.exerciseDetail {
+  margin: 8px 0;
+  padding: 4px 0;
+}
+
+.exerciseDetail strong {
+  color: #2e7d32;
+  margin-right: 8px;
 }

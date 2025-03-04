@@ -228,7 +228,6 @@ const Profile = () => {
         handleSave={handleSave}
       />
       <BiometricSetup userId={userId} />
-      {/* <FaceSetup userId={userId} /> */}
     </div>
   );
 };
