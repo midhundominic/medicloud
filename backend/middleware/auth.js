@@ -41,15 +41,6 @@ const authMiddleware = (req, res, next) => {
       return next();
     }
 
-    // Session check for other routes
-    if(!req.session?.userId || req.session.userId != decoded.userId){
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid session',
-        isSessionExpired: true
-      });
-    }
-
     next();
   } catch (error) {
     console.error('Auth Middleware Error:', error);
