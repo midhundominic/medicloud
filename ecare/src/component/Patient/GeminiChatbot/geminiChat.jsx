@@ -43,7 +43,10 @@ const ChatBot = () => {
   const fetchChatHistory = async () => {
     try {
       setIsLoading(true);
-      const response = await getChatHistory();
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const patientId = userData?.userId;
+      
+      const response = await getChatHistory(patientId);
       if (response.success) {
         const formattedMessages = [];
         response.history.forEach(msg => {
@@ -86,6 +89,8 @@ const ChatBot = () => {
   };
 
   const handleSendMessage = async (e) => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const patientId = userData?.userId;
     e.preventDefault();
     if (!inputMessage.trim() || isLoading || isRateLimited) return;
 
@@ -101,7 +106,7 @@ const ChatBot = () => {
     setError('');
 
     try {
-      const response = await chatWithBot(inputMessage);
+      const response = await chatWithBot(inputMessage,patientId);
       
       if (response.success) {
         const botMessage = {
