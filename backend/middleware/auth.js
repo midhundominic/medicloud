@@ -19,24 +19,20 @@ const authMiddleware = (req, res, next) => {
       return res.status(401).json({ 
         success: false, 
         message: "Access denied. No token provided.",
-        isSessionExpired: true
       });
     }
 
     // Verify token
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Check if token expired
-    if(decoded.exp < Date.now() / 1000){
-      return res.status(401).json({
-        success: false,
-        message: 'Token has expired',
-        isSessionExpired: true
-      });
-    }
+   
 
     // Add user info to request
-    req.user = decoded;
+    req.user = {
+      _id: decoded._id,
+      role: decoded.role,
+      email: decoded.email
+    };
 
     // Temporarily disable session check for specific routes
     if (req.originalUrl.includes('/upload-result') || 

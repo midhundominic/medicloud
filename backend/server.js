@@ -4,7 +4,6 @@ const cors = require("cors");
 const authRoutes = require("./Routes/authRoutes");
 const healthDataRoutes = require("./Routes/healthDataRoutes");
 require('dotenv').config();
-const sessionMiddleware = require('./middleware/session');
 const biometricRoutes = require('./Routes/biometricRoutes');
 const faceAuthRoutes = require('./Routes/faceAuthRoutes');
 const mlRoutes = require('./Routes/mlRoutes');
@@ -14,13 +13,13 @@ const app = express();
 
 // Enable CORS for all routes
 app.use(cors({
-  origin:  'https://mediclouds.netlify.app',
-  credentialr: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+app.use(express.json());
 
-// app.use(sessionMiddleware);
+
 
 // Middleware
 app.use(express.json( { limit: "50mb" } )); // Parse JSON bodies

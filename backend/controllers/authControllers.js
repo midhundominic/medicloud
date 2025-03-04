@@ -79,23 +79,7 @@ const signin = async (req, res) => {
         { expiresIn: "24h" }
       );
 
-      // Set up session
-      // req.session.userId = doctor._id;
-      // req.session.role = doctor.role;
-      // req.session.email = doctor.email;
-
-      return req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).json({ message: 'Session initialization failed' });
-        }
-
-        // Set HTTP-only cookie
-        // res.cookie('token', token, {
-        //   httpOnly: true,
-        //   secure: process.env.NODE_ENV === 'production',
-        //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        // });
+    
 
         return res.status(201).json({
           message: "Login Successful",
@@ -108,7 +92,6 @@ const signin = async (req, res) => {
           },
           token: token,
         });
-      });
     }
 
     // Check in Coordinator collection
@@ -127,23 +110,8 @@ const signin = async (req, res) => {
         { expiresIn: "24h" }
       );
 
-      // Set up session
-      // req.session.userId = coordinator._id;
-      // req.session.role = coordinator.role;
-      // req.session.email = coordinator.email;
-
-      return req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).json({ message: 'Session initialization failed' });
-        }
-
-        // Set HTTP-only cookie
-        // res.cookie('token', token, {
-        //   httpOnly: true,
-        //   secure: process.env.NODE_ENV === 'production',
-        //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        // });
+      
+      
 
         return res.status(201).json({
           message: "Login Successful",
@@ -156,7 +124,6 @@ const signin = async (req, res) => {
           },
           token: token,
         });
-      });
     }
 
     const laboratory = await LaboratoryModel.findOne({ email });
@@ -173,25 +140,7 @@ const signin = async (req, res) => {
         JWT_SECRET,
         { expiresIn: "24h" }
       );
-
-      // // Set up session
-      // req.session.userId = laboratory._id;
-      // req.session.role = laboratory.role;
-      // req.session.email = laboratory.email;
-
-      return req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.status(500).json({ message: 'Session initialization failed' });
-        }
-
-        // Set HTTP-only cookie
-        // res.cookie('token', token, {
-        //   httpOnly: true,
-        //   secure: process.env.NODE_ENV === 'production',
-        //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        // });
-
+      
         return res.status(201).json({
           message: "Login Successful",
           data: {
@@ -202,7 +151,6 @@ const signin = async (req, res) => {
           },
           token: token,
         });
-      });
     }
 
     // If no user found
@@ -225,14 +173,6 @@ const logout = async (req, res) => {
           message: 'Logout failed' 
         });
       }
-
-      // Clear HTTP-only cookie
-      // res.clearCookie('token', {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production',
-      //   sameSite: 'strict'
-      // });
-      
       return res.status(201).json({
         success: true,
         message: "Logged out successfully"

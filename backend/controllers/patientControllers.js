@@ -47,27 +47,7 @@ const signup = async (req, res) => {
       { expiresIn: "24h" } // Changed to 24h to match session duration
     );
 
-    // Set up session
-    req.session.userId = newUser._id;
-    req.session.role = newUser.role;
-    req.session.email = newUser.email;
 
-    // Save session before sending response
-    return req.session.save((err) => {
-      if (err) {
-        console.error('Session save error:', err);
-        return res.status(500).json({ 
-          success: false, 
-          message: 'Session initialization failed' 
-        });
-      }
-
-      // Set HTTP-only cookie
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-      });
 
       return res.status(201).json({
         success: true,
@@ -80,7 +60,6 @@ const signup = async (req, res) => {
         },
         token: token,
       });
-    });
 
   } catch (error) {
     console.error(error);
@@ -118,26 +97,7 @@ const authWithGoogle = async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    // Set up session
-    req.session.userId = user._id;
-    req.session.role = user.role;
-    req.session.email = user.email;
-
-    return req.session.save((err) => {
-      if (err) {
-        console.error('Session save error:', err);
-        return res.status(500).json({ 
-          success: false, 
-          message: 'Session initialization failed' 
-        });
-      }
-
-      // Set HTTP-only cookie
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-      });
+    
 
       return res.status(201).json({
         success: true,
@@ -150,7 +110,6 @@ const authWithGoogle = async (req, res) => {
         },
         token: token,
       });
-    });
 
   } catch (error) {
     console.error("Error during Google Sign-In:", error);
