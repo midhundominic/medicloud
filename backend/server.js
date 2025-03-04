@@ -13,11 +13,11 @@ const app = express();
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: '*', 
+  origin: 'https://mediclouds.netlify.app', 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.use(express.json());
+
 
 
 
