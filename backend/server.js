@@ -14,8 +14,7 @@ const app = express();
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://mediclouds.netlify.app',
-  credentials: include,
+  origin:  'https://mediclouds.netlify.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
