@@ -158,12 +158,6 @@ const determineCategory = (message) => {
 
 const getChatHistory = async (req, res) => {
     try {
-        if (!req.user || !req.user.userId) {
-            return res.status(401).json({
-                success: false,
-                message: 'User not authenticated'
-            });
-        }
 
         const { patientId } = req.params;
         const history = await ChatMessage.find({ patientId })
