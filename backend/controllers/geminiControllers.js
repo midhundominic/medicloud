@@ -42,15 +42,16 @@ const generationConfig = {
 
 const chatWithGemini = async (req, res) => {
     try {
-        const { message } = req.body;
-        const userId = req.user.userId;
-
-        if (!userId) {
+        if (!req.user || !req.user.userId) {
             return res.status(401).json({
                 success: false,
                 message: 'User not authenticated'
             });
         }
+
+        const { message } = req.body;
+        const userId = req.user.userId;
+        console.log("From Gemini",userId);
 
         // Fetch relevant data based on the query
         let contextData = {};
@@ -157,22 +158,19 @@ const determineCategory = (message) => {
 
 const getChatHistory = async (req, res) => {
     try {
-        const userId = req.user.userId;
-        
-        if (!userId) {
+        if (!req.user || !req.user.userId) {
             return res.status(401).json({
                 success: false,
                 message: 'User not authenticated'
             });
         }
 
-        const history = await ChatMessage.find({ 
-            userId,
-        })
-        .sort({ timestamp: 1 })
-        .limit(50);
+        const userId = req.user.userId;
+        const history = await ChatMessage.find({ userId })
+            .sort({ timestamp: 1 })
+            .limit(50);
 
-        res.status(201).json({ 
+        res.status(200).json({ 
             success: true, 
             history 
         });
