@@ -20,6 +20,8 @@ const stringToUint8Array = (str) => {
   return Uint8Array.from(str, (c) => c.charCodeAt(0));
 };
 
+const challenges = new Map(); // In-memory challenge storage
+
 exports.generateRegistrationOptions = async (req, res) => {
   const { userId, email } = req.body;
   console.log("reqqqq", req.body);
@@ -33,7 +35,7 @@ exports.generateRegistrationOptions = async (req, res) => {
 
     const options = await generateRegistrationOptions({
       rpName,
-      rpID,
+      rpID: "mediclouds.netlify.app", // Update this to match your domain
       userID: userIdBuffer,
       userName: email,
       attestationType: "none",
@@ -45,8 +47,13 @@ exports.generateRegistrationOptions = async (req, res) => {
       supportedAlgorithmIDs: [-7, -257],
     });
 
-    // Store the original challenge buffer
-    req.session.currentChallenge = options.challenge;
+    // Store the challenge with the userId as the key
+    challenges.set(userId, options.challenge);
+
+    // Set challenge cleanup timeout (5 minutes)
+    setTimeout(() => {
+      challenges.delete(userId);
+    }, 5 * 60 * 1000);
 
     // Convert challenge to base64url for the client
     const modifiedOptions = {
@@ -70,22 +77,26 @@ exports.verifyRegistration = async (req, res) => {
   console.log("Verification Request:", { credential, userId });
 
   try {
-    if (!credential || !req.session.currentChallenge) {
+    // Get the challenge from our Map using userId
+    const expectedChallenge = challenges.get(userId);
+    
+    if (!credential || !expectedChallenge) {
       console.error("Missing credential or challenge");
       return res.status(400).json({
         error: "Missing required verification data",
         credential: !!credential,
-        challenge: !!req.session.currentChallenge,
+        challenge: !!expectedChallenge,
       });
     }
 
+    // Clean up the challenge
+    challenges.delete(userId);
+
     const verification = await verifyRegistrationResponse({
       response: credential,
-      expectedChallenge: Buffer.from(req.session.currentChallenge).toString(
-        "base64url"
-      ),
-      expectedOrigin: origin,
-      expectedRPID: rpID,
+      expectedChallenge: Buffer.from(expectedChallenge).toString("base64url"),
+      expectedOrigin: "https://mediclouds.netlify.app",
+      expectedRPID: "mediclouds.netlify.app",
     });
 
     console.log("Verification Result:", verification);
@@ -143,13 +154,9 @@ exports.verifyRegistration = async (req, res) => {
       error: error.message,
       details: {
         hasCredential: !!req.body.credential,
-        hasChallenge: !!req.session.currentChallenge,
-        origin,
-        rpID,
-        expectedChallenge: Buffer.from(req.session.currentChallenge).toString(
-          "base64url"
-        ),
-        receivedChallenge: credential?.response?.clientDataJSON,
+        hasChallenge: !!challenges.get(userId),
+        origin: "https://mediclouds.netlify.app",
+        rpID: "mediclouds.netlify.app",
       },
     });
   }
