@@ -94,7 +94,11 @@ exports.verifyRegistration = async (req, res) => {
     challenges.delete(userId);
 
     const verification = await verifyRegistrationResponse({
-      response: credential,
+      response: {
+        ...credential,
+        // Ensure authenticatorData is included
+        authenticatorData: credential.response.authenticatorData,
+      },
       expectedChallenge: Buffer.from(expectedChallenge).toString("base64url"),
       expectedOrigin: "https://mediclouds.netlify.app",
       expectedRPID: "mediclouds.netlify.app",
