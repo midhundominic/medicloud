@@ -42,16 +42,10 @@ const generationConfig = {
 
 const chatWithGemini = async (req, res) => {
     try {
-        if (!req.user || !req.user.userId) {
-            return res.status(401).json({
-                success: false,
-                message: 'User not authenticated'
-            });
-        }
-
+       
+        const { patientId } = req.params;
         const { message } = req.body;
-        const userId = req.user.userId;
-        console.log("From Gemini",userId);
+        const userId = patientId;
 
         // Fetch relevant data based on the query
         let contextData = {};
