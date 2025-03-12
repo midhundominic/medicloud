@@ -35,11 +35,12 @@ const authMiddleware = (req, res, next) => {
     };
 
     // Temporarily disable session check for specific routes
-    // if (req.originalUrl.includes('/upload-result') || 
-    //     req.originalUrl.includes('/api/biometric/register') ||
-    //     req.originalUrl.includes('/api/biometric/verify-registration')) {
-    //   return next();
-    // }
+    if (req.originalUrl.includes('/upload-result') || 
+        req.originalUrl.includes('/api/biometric/register') ||
+        req.originalUrl.includes('/api/biometric/verify-registration')|| 
+        req.originalUrl.includes('/api/biometric/verify-authentication')) {
+      return next();
+    }
 
     next();
   } catch (error) {
