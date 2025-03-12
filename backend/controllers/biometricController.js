@@ -261,19 +261,29 @@ exports.verifyAuthentication = async (req, res) => {
     const expectedChallenge = challengeStore.get(authId);
     
     if (!credential || !expectedChallenge) {
+      console.error('Missing data:', { 
+        hasCredential: !!credential, 
+        hasChallenge: !!expectedChallenge,
+        authId
+      });
       return res.status(400).json({ 
-        error: 'Missing credential or challenge'
+        error: 'Missing credential or challenge',
+        details: {
+          hasCredential: !!credential,
+          hasChallenge: !!expectedChallenge,
+          authId: !!authId
+        }
       });
     }
 
-    // Ensure all required fields are present
-    if (!credential.response.authenticatorData || 
-        !credential.response.clientDataJSON || 
-        !credential.response.signature) {
-      return res.status(400).json({
-        error: 'Missing required credential response fields'
-      });
-    }
+    // Log the received credential
+    console.log('Received credential:', {
+      id: credential.id,
+      type: credential.type,
+      hasAuthenticatorData: !!credential.response?.authenticatorData,
+      hasClientDataJSON: !!credential.response?.clientDataJSON,
+      hasSignature: !!credential.response?.signature
+    });
 
     // Find user by credential ID
     const user = await PatientModel.findOne({
@@ -292,92 +302,55 @@ exports.verifyAuthentication = async (req, res) => {
       cred => cred.credentialID === credential.id
     );
 
-    if (!storedCredential) {
-      return res.status(404).json({ 
-        error: 'Credential not found in user record'
-      });
-    }
-
-    // Convert Binary public key to Buffer
-    let publicKeyBuffer;
-    if (storedCredential.publicKey instanceof Buffer) {
-      publicKeyBuffer = storedCredential.publicKey;
-    } else if (storedCredential.publicKey.buffer) {
-      publicKeyBuffer = Buffer.from(storedCredential.publicKey.buffer);
-    } else {
-      publicKeyBuffer = Buffer.from(storedCredential.publicKey, 'base64');
-    }
-
-    // Prepare verification data
     const verification = await verifyAuthenticationResponse({
       response: credential,
       expectedChallenge: Buffer.from(expectedChallenge).toString('base64url'),
       expectedOrigin: origin,
       expectedRPID: rpID,
       authenticator: {
-        credentialPublicKey: publicKeyBuffer,
+        credentialPublicKey: storedCredential.publicKey,
         credentialID: Buffer.from(storedCredential.credentialID, 'base64url'),
         counter: storedCredential.counter
       },
       requireUserVerification: false
     });
 
-    // Clean up the challenge after use
+    // Clean up the challenge
     challengeStore.delete(authId);
 
     if (verification.verified) {
-      // Update the counter
-      await PatientModel.updateOne(
+      // Generate JWT token
+      const token = jwt.sign(
         { 
           _id: user._id,
-          'biometricCredentials.credentialID': credential.id 
+          email: user.email,
+          role: user.role
         },
-        { 
-          $set: { 
-            'biometricCredentials.$.counter': verification.authenticationInfo.newCounter 
-          } 
-        }
-      );
-
-      const token = jwt.sign(
-        { userId: user._id, email: user.email, role: user.role },
         JWT_SECRET,
-        { expiresIn: "24h" }
+        { expiresIn: '24h' }
       );
 
-      // Set up session
-      req.session.userId = user._id;
-      req.session.role = user.role;
-      req.session.email = user.email;
-
-      res.status(201).json({
+      res.json({
         verified: true,
         token,
         data: {
-          email: user.email,
-          role: user.role,
-          name: user.name,
           id: user._id,
+          email: user.email,
+          name: user.name,
+          role: user.role
         }
       });
     } else {
-      res.status(400).json({ error: "Authentication failed" });
+      res.status(400).json({
+        verified: false,
+        error: 'Verification failed'
+      });
     }
   } catch (error) {
-    console.error('Authentication verification error:', error);
-    console.error('Full error details:', {
-      hasCredential: !!req.body.credential,
-      hasResponse: !!req.body.credential?.response,
-      hasAuthenticatorData: !!req.body.credential?.response?.authenticatorData,
-      error: error.stack
-    });
-
+    console.error('Authentication error:', error);
     res.status(500).json({ 
       error: error.message,
-      details: {
-        hasCredential: !!req.body.credential,
-        hasChallenge: !!expectedChallenge,
-      }
+      details: error.stack
     });
   }
 };
