@@ -11,16 +11,33 @@ const mlRoutes = require('./Routes/mlRoutes');
 
 const app = express();
 
-// Enable CORS for all routes
+// Enable CORS for all routes with more specific configuration
 app.use(cors({
-  origin: 'https://mediclouds.netlify.app', 
+  origin: process.env.NODE_ENV === 'production'
+    ? 'https://mediclouds.netlify.app'
+    : 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
+  exposedHeaders: ['set-cookie']
 }));
 
+// Add cookie parser middleware
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
-
+// Add session middleware with secure configuration
+const session = require('express-session');
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // true in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
 
 // Middleware
 app.use(express.json( { limit: "50mb" } )); // Parse JSON bodies

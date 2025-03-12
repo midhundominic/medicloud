@@ -11,9 +11,16 @@ const crypto = require("crypto");
 const JWT_SECRET = process.env.JWT_SECRET || "midhun12345";
 
 // Update these settings for cross-platform compatibility
-const rpName = "medicloud";
-const rpID = "mediclouds.netlify.app"; // Your domain in production
-const origin = "https://mediclouds.netlify.app";
+const rpName = "ECare";
+// Update rpID to match your deployed domain
+const rpID = process.env.NODE_ENV === 'production' 
+  ? "mediclouds.netlify.app"
+  : "localhost";
+
+// Update origin based on environment
+const origin = process.env.NODE_ENV === 'production'
+  ? "https://mediclouds.netlify.app"
+  : "http://localhost:5173";
 
 // Helper function to convert string to Uint8Array
 const stringToUint8Array = (str) => {
