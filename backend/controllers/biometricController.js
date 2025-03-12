@@ -22,6 +22,9 @@ const origin = process.env.NODE_ENV === 'production'
   ? "https://mediclouds.netlify.app"
   : "http://localhost:5173";
 
+// At the top of the file, add this temporary challenge store
+const challengeStore = new Map();
+
 // Helper function to convert string to Uint8Array
 const stringToUint8Array = (str) => {
   return Uint8Array.from(str, (c) => c.charCodeAt(0));
@@ -52,8 +55,11 @@ exports.generateRegistrationOptions = async (req, res) => {
       supportedAlgorithmIDs: [-7, -257],
     });
 
-    // Store the original challenge buffer
-    req.session.currentChallenge = options.challenge;
+    // Store the challenge with the userId as key
+    challengeStore.set(userId, options.challenge);
+    
+    // Set cleanup timeout (5 minutes)
+    setTimeout(() => challengeStore.delete(userId), 5 * 60 * 1000);
 
     // Convert challenge to base64url for the client
     const modifiedOptions = {
@@ -77,23 +83,26 @@ exports.verifyRegistration = async (req, res) => {
   console.log("Verification Request:", { credential, userId });
 
   try {
-    if (!credential || !req.session.currentChallenge) {
+    const expectedChallenge = challengeStore.get(userId);
+    
+    if (!credential || !expectedChallenge) {
       console.error("Missing credential or challenge");
       return res.status(400).json({
         error: "Missing required verification data",
         credential: !!credential,
-        challenge: !!req.session.currentChallenge,
+        challenge: !!expectedChallenge,
       });
     }
 
     const verification = await verifyRegistrationResponse({
       response: credential,
-      expectedChallenge: Buffer.from(req.session.currentChallenge).toString(
-        "base64url"
-      ),
+      expectedChallenge: Buffer.from(expectedChallenge).toString("base64url"),
       expectedOrigin: origin,
       expectedRPID: rpID,
     });
+
+    // Clean up the challenge after use
+    challengeStore.delete(userId);
 
     console.log("Verification Result:", verification);
 
@@ -150,10 +159,10 @@ exports.verifyRegistration = async (req, res) => {
       error: error.message,
       details: {
         hasCredential: !!req.body.credential,
-        hasChallenge: !!req.session.currentChallenge,
+        hasChallenge: !!expectedChallenge,
         origin,
         rpID,
-        expectedChallenge: Buffer.from(req.session.currentChallenge).toString(
+        expectedChallenge: Buffer.from(expectedChallenge).toString(
           "base64url"
         ),
         receivedChallenge: credential?.response?.clientDataJSON,
@@ -209,6 +218,13 @@ exports.generateAuthenticationOptions = async (req, res) => {
 
     // Generate random bytes for challenge
     const challenge = crypto.randomBytes(32);
+    
+    // Store the challenge with a unique ID
+    const authId = crypto.randomBytes(16).toString('hex');
+    challengeStore.set(authId, challenge);
+    
+    // Set cleanup timeout
+    setTimeout(() => challengeStore.delete(authId), 5 * 60 * 1000);
 
     const options = {
       challenge,
@@ -217,9 +233,6 @@ exports.generateAuthenticationOptions = async (req, res) => {
       timeout: 60000,
       userVerification: "preferred",
     };
-
-    // Store the challenge as Buffer in session
-    req.session.currentChallenge = challenge;
 
     // Format the response for the client
     const clientOptions = {
@@ -233,6 +246,7 @@ exports.generateAuthenticationOptions = async (req, res) => {
 
     res.json({
       options: clientOptions,
+      authId // Send this back to the client
     });
   } catch (error) {
     console.error("Error generating authentication options:", error);
@@ -241,12 +255,12 @@ exports.generateAuthenticationOptions = async (req, res) => {
 };
 
 exports.verifyAuthentication = async (req, res) => {
-  let storedCredential = null;
+  const { credential, authId } = req.body;
+  
   try {
-    const { credential } = req.body;
-    console.log("Received credential:", JSON.stringify(credential, null, 2));
-
-    if (!credential || !req.session.currentChallenge) {
+    const expectedChallenge = challengeStore.get(authId);
+    
+    if (!credential || !expectedChallenge) {
       return res.status(400).json({ 
         error: 'Missing credential or challenge'
       });
@@ -265,7 +279,7 @@ exports.verifyAuthentication = async (req, res) => {
     }
 
     // Find the specific credential
-    storedCredential = user.biometricCredentials.find(
+    const storedCredential = user.biometricCredentials.find(
       cred => cred.credentialID === credential.id
     );
 
@@ -286,12 +300,12 @@ exports.verifyAuthentication = async (req, res) => {
     }
 
     // Convert challenge to correct format
-    const expectedChallenge = Buffer.from(req.session.currentChallenge).toString('base64url');
+    const expectedChallengeBuffer = Buffer.from(expectedChallenge, 'base64url');
 
     // Prepare verification data
     const verification = await verifyAuthenticationResponse({
       response: credential,
-      expectedChallenge: expectedChallenge,
+      expectedChallenge: expectedChallengeBuffer,
       expectedOrigin: origin, // Use the origin constant defined at the top
       expectedRPID: rpID,     // Use the rpID constant defined at the top
       authenticator: {
@@ -301,6 +315,9 @@ exports.verifyAuthentication = async (req, res) => {
       },
       requireUserVerification: false
     });
+
+    // Clean up the challenge after use
+    challengeStore.delete(authId);
 
     if (verification.verified) {
       // Update the counter
@@ -344,8 +361,7 @@ exports.verifyAuthentication = async (req, res) => {
     console.error('Authentication verification error:', error);
     console.error('Full error details:', {
       credential: req.body.credential,
-      challenge: req.session.currentChallenge,
-      storedCredential,
+      challenge: expectedChallenge,
       error: error.stack
     });
 
@@ -353,8 +369,7 @@ exports.verifyAuthentication = async (req, res) => {
       error: error.message,
       details: {
         hasCredential: !!req.body.credential,
-        hasChallenge: !!req.session.currentChallenge,
-        storedCredential: !!storedCredential
+        hasChallenge: !!expectedChallenge,
       }
     });
   }
