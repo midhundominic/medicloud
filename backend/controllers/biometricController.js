@@ -266,6 +266,15 @@ exports.verifyAuthentication = async (req, res) => {
       });
     }
 
+    // Ensure all required fields are present
+    if (!credential.response.authenticatorData || 
+        !credential.response.clientDataJSON || 
+        !credential.response.signature) {
+      return res.status(400).json({
+        error: 'Missing required credential response fields'
+      });
+    }
+
     // Find user by credential ID
     const user = await PatientModel.findOne({
       'biometricCredentials.credentialID': credential.id
@@ -296,18 +305,15 @@ exports.verifyAuthentication = async (req, res) => {
     } else if (storedCredential.publicKey.buffer) {
       publicKeyBuffer = Buffer.from(storedCredential.publicKey.buffer);
     } else {
-      publicKeyBuffer = Buffer.from(storedCredential.publicKey.toString('base64'), 'base64');
+      publicKeyBuffer = Buffer.from(storedCredential.publicKey, 'base64');
     }
-
-    // Convert challenge to correct format
-    const expectedChallengeBuffer = Buffer.from(expectedChallenge, 'base64url');
 
     // Prepare verification data
     const verification = await verifyAuthenticationResponse({
       response: credential,
-      expectedChallenge: expectedChallengeBuffer,
-      expectedOrigin: origin, // Use the origin constant defined at the top
-      expectedRPID: rpID,     // Use the rpID constant defined at the top
+      expectedChallenge: Buffer.from(expectedChallenge).toString('base64url'),
+      expectedOrigin: origin,
+      expectedRPID: rpID,
       authenticator: {
         credentialPublicKey: publicKeyBuffer,
         credentialID: Buffer.from(storedCredential.credentialID, 'base64url'),
@@ -360,8 +366,9 @@ exports.verifyAuthentication = async (req, res) => {
   } catch (error) {
     console.error('Authentication verification error:', error);
     console.error('Full error details:', {
-      credential: req.body.credential,
-      challenge: expectedChallenge,
+      hasCredential: !!req.body.credential,
+      hasResponse: !!req.body.credential?.response,
+      hasAuthenticatorData: !!req.body.credential?.response?.authenticatorData,
       error: error.stack
     });
 
