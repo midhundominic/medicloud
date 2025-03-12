@@ -11,17 +11,14 @@ const crypto = require("crypto");
 const JWT_SECRET = process.env.JWT_SECRET || "midhun12345";
 
 // Update these settings for cross-platform compatibility
-const rpName = "ECare";
-const rpID = "localhost"; // Your domain in production
-const origin = `http://${rpID}:5173`;
+const rpName = "medicloud";
+const rpID = "mediclouds.netlify.app"; // Your domain in production
+const origin = "https://mediclouds.netlify.app";
 
 // Helper function to convert string to Uint8Array
 const stringToUint8Array = (str) => {
   return Uint8Array.from(str, (c) => c.charCodeAt(0));
 };
-
-const challenges = new Map(); // In-memory challenge storage
-const authenticationChallenges = new Map(); // Add this new Map for authentication challenges
 
 exports.generateRegistrationOptions = async (req, res) => {
   const { userId, email } = req.body;
@@ -36,7 +33,7 @@ exports.generateRegistrationOptions = async (req, res) => {
 
     const options = await generateRegistrationOptions({
       rpName,
-      rpID: "mediclouds.netlify.app", // Update this to match your domain
+      rpID,
       userID: userIdBuffer,
       userName: email,
       attestationType: "none",
@@ -48,13 +45,8 @@ exports.generateRegistrationOptions = async (req, res) => {
       supportedAlgorithmIDs: [-7, -257],
     });
 
-    // Store the challenge with the userId as the key
-    challenges.set(userId, options.challenge);
-
-    // Set challenge cleanup timeout (5 minutes)
-    setTimeout(() => {
-      challenges.delete(userId);
-    }, 5 * 60 * 1000);
+    // Store the original challenge buffer
+    req.session.currentChallenge = options.challenge;
 
     // Convert challenge to base64url for the client
     const modifiedOptions = {
@@ -78,30 +70,22 @@ exports.verifyRegistration = async (req, res) => {
   console.log("Verification Request:", { credential, userId });
 
   try {
-    // Get the challenge from our Map using userId
-    const expectedChallenge = challenges.get(userId);
-    
-    if (!credential || !expectedChallenge) {
+    if (!credential || !req.session.currentChallenge) {
       console.error("Missing credential or challenge");
       return res.status(400).json({
         error: "Missing required verification data",
         credential: !!credential,
-        challenge: !!expectedChallenge,
+        challenge: !!req.session.currentChallenge,
       });
     }
 
-    // Clean up the challenge
-    challenges.delete(userId);
-
     const verification = await verifyRegistrationResponse({
-      response: {
-        ...credential,
-        // Ensure authenticatorData is included
-        authenticatorData: credential.response.authenticatorData,
-      },
-      expectedChallenge: Buffer.from(expectedChallenge).toString("base64url"),
-      expectedOrigin: "https://mediclouds.netlify.app",
-      expectedRPID: "mediclouds.netlify.app",
+      response: credential,
+      expectedChallenge: Buffer.from(req.session.currentChallenge).toString(
+        "base64url"
+      ),
+      expectedOrigin: origin,
+      expectedRPID: rpID,
     });
 
     console.log("Verification Result:", verification);
@@ -159,9 +143,13 @@ exports.verifyRegistration = async (req, res) => {
       error: error.message,
       details: {
         hasCredential: !!req.body.credential,
-        hasChallenge: !!challenges.get(userId),
-        origin: "https://mediclouds.netlify.app",
-        rpID: "mediclouds.netlify.app",
+        hasChallenge: !!req.session.currentChallenge,
+        origin,
+        rpID,
+        expectedChallenge: Buffer.from(req.session.currentChallenge).toString(
+          "base64url"
+        ),
+        receivedChallenge: credential?.response?.clientDataJSON,
       },
     });
   }
@@ -182,7 +170,7 @@ exports.generateAuthenticationOptions = async (req, res) => {
         .map((cred) => {
           try {
             return {
-              id: Buffer.from(cred.credentialID, "base64url"),
+              id: Buffer.from(cred.credentialID, "base64url"), // Convert to Buffer
               type: "public-key",
               transports: cred.transports || ["internal"],
             };
@@ -191,10 +179,20 @@ exports.generateAuthenticationOptions = async (req, res) => {
             return null;
           }
         })
-        .filter(Boolean);
+        .filter(Boolean); // Remove any null entries
 
       return [...acc, ...credentials];
     }, []);
+
+    // Log the credentials for debugging
+    console.log(
+      "Formatted credentials:",
+      allowCredentials.map((c) => ({
+        ...c,
+        id: c.id.toString("base64url"),
+        idBuffer: Buffer.isBuffer(c.id),
+      }))
+    );
 
     if (allowCredentials.length === 0) {
       return res.status(400).json({
@@ -208,21 +206,13 @@ exports.generateAuthenticationOptions = async (req, res) => {
     const options = {
       challenge,
       allowCredentials,
-      rpID: "mediclouds.netlify.app", // Update with your domain
+      rpID,
       timeout: 60000,
       userVerification: "preferred",
     };
 
-    // Generate a unique key for this authentication attempt
-    const authId = crypto.randomBytes(32).toString('hex');
-    
-    // Store the challenge with the authId
-    authenticationChallenges.set(authId, challenge);
-
-    // Set cleanup timeout (5 minutes)
-    setTimeout(() => {
-      authenticationChallenges.delete(authId);
-    }, 5 * 60 * 1000);
+    // Store the challenge as Buffer in session
+    req.session.currentChallenge = challenge;
 
     // Format the response for the client
     const clientOptions = {
@@ -236,7 +226,6 @@ exports.generateAuthenticationOptions = async (req, res) => {
 
     res.json({
       options: clientOptions,
-      authId, // Send this to the client
     });
   } catch (error) {
     console.error("Error generating authentication options:", error);
@@ -250,38 +239,11 @@ exports.verifyAuthentication = async (req, res) => {
     const { credential } = req.body;
     console.log("Received credential:", JSON.stringify(credential, null, 2));
 
-    // Check if credential and its response are defined
-    if (!credential || !credential.response) {
+    if (!credential || !req.session.currentChallenge) {
       return res.status(400).json({ 
-        error: 'Missing credential or response',
-        details: {
-          hasCredential: !!credential,
-          hasResponse: !!credential?.response,
-          // authId
-        }
+        error: 'Missing credential or challenge'
       });
     }
-
-    // Check if authenticatorData is defined
-    // if (!credential.response.authenticatorData) {
-    //   return res.status(400).json({ 
-    //     error: 'Missing authenticatorData in response',
-    //     authId
-    //   });
-    // }
-
-    // Get the challenge using authId
-    // const expectedChallenge = authenticationChallenges.get(authId);
-
-    // if (!expectedChallenge) {
-    //   return res.status(400).json({ 
-    //     error: 'Missing challenge',
-    //     authId
-    //   });
-    // }
-
-    // Clean up the challenge
-    // authenticationChallenges.delete(authId);
 
     // Find user by credential ID
     const user = await PatientModel.findOne({
@@ -295,6 +257,7 @@ exports.verifyAuthentication = async (req, res) => {
       });
     }
 
+    // Find the specific credential
     storedCredential = user.biometricCredentials.find(
       cred => cred.credentialID === credential.id
     );
@@ -315,34 +278,22 @@ exports.verifyAuthentication = async (req, res) => {
       publicKeyBuffer = Buffer.from(storedCredential.publicKey.toString('base64'), 'base64');
     }
 
+    // Convert challenge to correct format
+    const expectedChallenge = Buffer.from(req.session.currentChallenge).toString('base64url');
+
     // Prepare verification data
-    const verificationData = {
-      response: {
-        authenticatorData: credential.response.authenticatorData,
-        clientDataJSON: credential.response.clientDataJSON,
-        signature: credential.response.signature,
-        userHandle: credential.response.userHandle
-      },
-      expectedChallenge: Buffer.from(expectedChallenge).toString('base64url'),
-      expectedOrigin: "https://mediclouds.netlify.app",
-      expectedRPID: "mediclouds.netlify.app",
+    const verification = await verifyAuthenticationResponse({
+      response: credential,
+      expectedChallenge: expectedChallenge,
+      expectedOrigin: origin, // Use the origin constant defined at the top
+      expectedRPID: rpID,     // Use the rpID constant defined at the top
       authenticator: {
         credentialPublicKey: publicKeyBuffer,
         credentialID: Buffer.from(storedCredential.credentialID, 'base64url'),
-        counter: storedCredential.counter || 0
+        counter: storedCredential.counter
       },
       requireUserVerification: false
-    };
-
-    console.log('Verification data:', {
-      ...verificationData,
-      authenticator: {
-        ...verificationData.authenticator,
-        credentialPublicKey: '<buffer>',
-      }
     });
-
-    const verification = await verifyAuthenticationResponse(verificationData);
 
     if (verification.verified) {
       // Update the counter
@@ -364,6 +315,11 @@ exports.verifyAuthentication = async (req, res) => {
         { expiresIn: "24h" }
       );
 
+      // Set up session
+      req.session.userId = user._id;
+      req.session.role = user.role;
+      req.session.email = user.email;
+
       res.status(201).json({
         verified: true,
         token,
@@ -379,13 +335,19 @@ exports.verifyAuthentication = async (req, res) => {
     }
   } catch (error) {
     console.error('Authentication verification error:', error);
+    console.error('Full error details:', {
+      credential: req.body.credential,
+      challenge: req.session.currentChallenge,
+      storedCredential,
+      error: error.stack
+    });
+
     res.status(500).json({ 
       error: error.message,
       details: {
         hasCredential: !!req.body.credential,
-        hasChallenge: !!authenticationChallenges.size,
-        storedCredential: !!storedCredential,
-        credentialResponse: req.body.credential?.response
+        hasChallenge: !!req.session.currentChallenge,
+        storedCredential: !!storedCredential
       }
     });
   }
