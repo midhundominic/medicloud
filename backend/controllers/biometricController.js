@@ -247,7 +247,7 @@ exports.generateAuthenticationOptions = async (req, res) => {
 exports.verifyAuthentication = async (req, res) => {
   let storedCredential = null;
   try {
-    const { credential, authId } = req.body;
+    const { credential } = req.body;
     console.log("Received credential:", JSON.stringify(credential, null, 2));
 
     // Check if credential and its response are defined
@@ -257,31 +257,31 @@ exports.verifyAuthentication = async (req, res) => {
         details: {
           hasCredential: !!credential,
           hasResponse: !!credential?.response,
-          authId
+          // authId
         }
       });
     }
 
     // Check if authenticatorData is defined
-    if (!credential.response.authenticatorData) {
-      return res.status(400).json({ 
-        error: 'Missing authenticatorData in response',
-        authId
-      });
-    }
+    // if (!credential.response.authenticatorData) {
+    //   return res.status(400).json({ 
+    //     error: 'Missing authenticatorData in response',
+    //     authId
+    //   });
+    // }
 
     // Get the challenge using authId
-    const expectedChallenge = authenticationChallenges.get(authId);
+    // const expectedChallenge = authenticationChallenges.get(authId);
 
-    if (!expectedChallenge) {
-      return res.status(400).json({ 
-        error: 'Missing challenge',
-        authId
-      });
-    }
+    // if (!expectedChallenge) {
+    //   return res.status(400).json({ 
+    //     error: 'Missing challenge',
+    //     authId
+    //   });
+    // }
 
     // Clean up the challenge
-    authenticationChallenges.delete(authId);
+    // authenticationChallenges.delete(authId);
 
     // Find user by credential ID
     const user = await PatientModel.findOne({
