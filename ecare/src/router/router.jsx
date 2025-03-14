@@ -58,6 +58,8 @@ import GeminiChatbot from "../component/Patient/GeminiChatbot";
 import PrescriptionAnalyzer from "../component/Patient/PrescriptionAnlayzer";
 import DiseasePrediction from '../component/Patient/DiseaseDetection';
 
+import HealthTools from '../component/Patient/HealthTools';
+
 
 const Router = () => {
   const location = useLocation();
@@ -178,6 +180,8 @@ const Router = () => {
             <Route path ={ROUTES.GEMINI_CHATBOT} element={<GeminiChatbot/>}/>
             <Route path = {ROUTES.PRESCRIPTION_ANALYZER} element={<PrescriptionAnalyzer/>}/>
             <Route path = {ROUTES.DISEASE_PREDICTION} element={<DiseasePrediction/>}/>
+
+            <Route path = {ROUTES.HEALTH_TOOLS} element= {<HealthTools/>}/>
 
           </Routes>
         </Main>

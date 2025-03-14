@@ -62,21 +62,33 @@ const Login = () => {
     try {
       setIsLoading(true);
       
+      // Check WebAuthn support
+      if (!window.PublicKeyCredential) {
+        throw new Error('WebAuthn is not supported in this browser');
+      }
+
+      // Get authentication options
       const authOptions = await getBiometricAuthOptions();
       console.log('Auth options received:', authOptions);
-
+      
       if (!authOptions?.options) {
         throw new Error('Failed to get authentication options');
       }
 
+      // Start authentication
       const credential = await startAuthentication(authOptions.options);
       console.log('Credential received:', credential);
+      
+      // Verify the authentication
+      const verificationResult = await verifyBiometricAuth({
+        credential,
+        authId: authOptions.authId
+      });
 
-      const verificationResult = await verifyBiometricAuth(credential);
       console.log('Verification result:', verificationResult);
 
       if (verificationResult.verified) {
-        // Store token and user data consistently with regular login
+        // Handle successful authentication
         localStorage.setItem("token", verificationResult.token);
         
         const userData = {
@@ -88,7 +100,6 @@ const Login = () => {
         
         localStorage.setItem("userData", JSON.stringify(userData));
 
-        // Update context based on role
         if (verificationResult.data.role === 1) {
           setPatient(verificationResult.data);
           navigate(ROUTES.PATIENT_HOME);
@@ -102,11 +113,22 @@ const Login = () => {
         toast.error('Biometric authentication failed');
       }
     } catch (error) {
-      console.error('Biometric authentication error:', error);
+      console.error('Full error details:', error);
       toast.error(error.message || 'Failed to authenticate with biometrics');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Helper function to convert ArrayBuffer to Base64URL string
+  const bufferToBase64URLString = (buffer) => {
+    const bytes = new Uint8Array(buffer);
+    let str = '';
+    for (const charCode of bytes) {
+      str += String.fromCharCode(charCode);
+    }
+    const base64String = btoa(str);
+    return base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
   };
 
   const handleSubmit = async (event) => {

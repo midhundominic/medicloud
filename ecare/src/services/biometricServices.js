@@ -63,6 +63,8 @@ export const verifyBiometricRegistration = async (userId, credential) => {
         clientExtensionResults: credential.clientExtensionResults,
         authenticatorAttachment: credential.authenticatorAttachment
       },
+    }, {
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -73,8 +75,17 @@ export const verifyBiometricRegistration = async (userId, credential) => {
 
 // Helper function to convert ArrayBuffer to base64url string
 const arrayBufferToBase64 = (buffer) => {
-  if (!buffer) return '';
-  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+  if (!buffer) return null;
+  
+  // Convert ArrayBuffer to Base64
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  
+  // Convert to Base64URL format
+  return btoa(binary)
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=/g, '');
@@ -101,12 +112,15 @@ export const getBiometricAuthOptions = async () => {
   }
 };
 
-export const verifyBiometricAuth = async (credential) => {
+export const verifyBiometricAuth = async ({ credential, authId }) => {
   try {
-    // Ensure proper base64url encoding for all credential data
+    // Log the incoming credential for debugging
+    console.log('Raw credential:', credential);
+
+    // Ensure credential is properly formatted with all response data
     const formattedCredential = {
       id: credential.id,
-      rawId: credential.rawId instanceof ArrayBuffer
+      rawId: credential.rawId instanceof ArrayBuffer 
         ? arrayBufferToBase64(credential.rawId)
         : credential.rawId,
       type: credential.type,
@@ -123,17 +137,31 @@ export const verifyBiometricAuth = async (credential) => {
         userHandle: credential.response.userHandle instanceof ArrayBuffer
           ? arrayBufferToBase64(credential.response.userHandle)
           : credential.response.userHandle
-      }
+      },
+      clientExtensionResults: credential.clientExtensionResults,
+      authenticatorAttachment: credential.authenticatorAttachment
     };
 
+    // Log the formatted credential for verification
+    console.log('Formatted credential:', formattedCredential);
+
+    // Verify all required fields are present
+    if (!formattedCredential.response.authenticatorData ||
+        !formattedCredential.response.clientDataJSON ||
+        !formattedCredential.response.signature) {
+      throw new Error('Missing required credential fields');
+    }
+
     const response = await apiClient.post('/biometric/verify-authentication', {
-      credential: formattedCredential
+      credential: formattedCredential,
+      authId
     }, {
       withCredentials: true
     });
 
     return response.data;
   } catch (error) {
+    console.error('Full credential object:', credential);
     console.error('Error verifying biometric authentication:', error);
     throw error;
   }

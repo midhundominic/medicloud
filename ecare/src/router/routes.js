@@ -49,7 +49,8 @@ export const ROUTES = {
   VIRTUALHEALTHASSISTANT: "/health/assistant",
   GEMINI_CHATBOT: "/patient/chatbot",
   PRESCRIPTION_ANALYZER: "/patient/prescription/analyzer",
-  DISEASE_PREDICTION: "/patient/disease/prediction"
+  DISEASE_PREDICTION: "/patient/disease/prediction",
+  HEALTH_TOOLS: "/patient/health/tools"
 };
 
 export const NON_AUTH_ROUTES = [
@@ -95,4 +96,5 @@ export const NON_AUTH_ROUTES = [
   ROUTES.GEMINI_CHATBOT,
   ROUTES.PRESCRIPTION_ANALYZER,
   ROUTES.DISEASE_PREDICTION,
+  ROUTES.HEALTH_TOOLS,
 ];

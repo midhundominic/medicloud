@@ -67,7 +67,7 @@ export const NAV_CONTENT_PATIENT = [
   {
     id: 9,
     title: "Health Assistant",
-    link: ROUTES.VIRTUALHEALTHASSISTANT,
+    link: ROUTES.HEALTH_TOOLS,
     icon: MedicationIcon,
   },
   {

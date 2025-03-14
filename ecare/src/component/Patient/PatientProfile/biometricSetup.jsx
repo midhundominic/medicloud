@@ -45,6 +45,12 @@ const BiometricSetup = ({ userId }) => {
         return;
       }
 
+      // Make sure userId is available
+      if (!userId) {
+        toast.error('User ID is required for biometric setup');
+        return;
+      }
+
       const registrationResponse = await registerBiometric(userId, email);
       
       if (!registrationResponse?.options) {
@@ -53,6 +59,7 @@ const BiometricSetup = ({ userId }) => {
 
       const credential = await startRegistration(registrationResponse.options);
       
+      // Ensure the credential is correctly structured
       const verification = await verifyBiometricRegistration(userId, credential);
 
       if (verification.verified) {
