@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import { Button } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
@@ -9,7 +9,7 @@ import CallEndIcon from '@mui/icons-material/CallEnd';
 import styles from './videoCall.module.css';
 import { toast } from 'react-toastify';
 
-const VideoCall = ({ token, channelName, uid, onEndCall, role }) => {
+const VideoCall = forwardRef(({ token, channelName, uid, onEndCall, role }, ref) => {
   const [localVideoTrack, setLocalVideoTrack] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
@@ -22,6 +22,14 @@ const VideoCall = ({ token, channelName, uid, onEndCall, role }) => {
   const clientRef = useRef(null);
   const localVideoRef = useRef(null);
   const remoteVideoRefs = useRef({});
+  
+  // Expose the endCall method to parent components
+  useImperativeHandle(ref, () => ({
+    endCall: async () => {
+      await cleanup();
+      onEndCall();
+    }
+  }));
   
   // Initialize client only once
   useEffect(() => {
@@ -198,11 +206,6 @@ const VideoCall = ({ token, channelName, uid, onEndCall, role }) => {
     }
   };
 
-  const handleEndCall = async () => {
-    await cleanup();
-    onEndCall();
-  };
-
   return (
     <div className={styles.videoCallContainer}>
       <div className={styles.videoGrid}>
@@ -256,7 +259,7 @@ const VideoCall = ({ token, channelName, uid, onEndCall, role }) => {
           {isVideoMuted ? <VideocamOffIcon /> : <VideocamIcon />}
         </Button>
         <Button 
-          onClick={handleEndCall}
+          onClick={onEndCall}
           variant="contained"
           className={`${styles.controlButton} ${styles.endCallButton}`}
         >
@@ -265,6 +268,6 @@ const VideoCall = ({ token, channelName, uid, onEndCall, role }) => {
       </div>
     </div>
   );
-};
+});
 
 export default VideoCall;

@@ -15,7 +15,7 @@ import { ROUTES } from "../../../../router/routes";
 import { getMedicinesList } from "../../../../services/medicineservices";
 import { submitPrescription, updatePrescription, getPrescriptionByAppointment } from "../../../../services/prescriptionServices";
 
-const DoctorReview = ({ labTests = [] }) => {
+const DoctorReview = ({ labTests = [], onPrescriptionSubmit }) => {
   const [comment, setComment] = useState("");
   const [tests, setTests] = useState([]);
   const [medicines, setMedicines] = useState(INITIAL_MEDICINE_ARR);
@@ -137,6 +137,12 @@ const DoctorReview = ({ labTests = [] }) => {
         await submitPrescription(prescriptionData);
         toast.success("Prescription submitted successfully");
       }
+      
+      // Call the callback to end the video call
+      if (onPrescriptionSubmit) {
+        onPrescriptionSubmit();
+      }
+      
       navigate(ROUTES.SCHEDULED_APPOINTMENTS);
     } catch (error) {
       console.error("Error:", error);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Box, Tab, Tabs, Dialog } from "@mui/material";
 import { toast } from "react-toastify";
@@ -21,13 +21,15 @@ import { startConsultation, endConsultation } from '../../../services/consultati
 
 const PrescribeForm = () => {
   const [searchParams] = useSearchParams();
+  const appointmentId = searchParams.get("appointmentId");
 
   const [appointment, setAppointment] = useState(null);
   const [activeTab, setActiveTab] = React.useState(0);
   const [labTests, setLabTests] = useState([]);
   const [showCall, setShowCall] = useState(false);
   const [consultationData, setConsultationData] = useState(null);
-
+  
+  const videoCallRef = useRef(null);
 
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -51,8 +53,6 @@ const PrescribeForm = () => {
         toast.error('Error fetching lab tests');
       }
     };
-    const appointmentId = searchParams.get("appointmentId");
-    // const doctorId = searchParams.get("doctorId");
     if (appointmentId) {
       fetchAppointmentDetails();
       fetchTests();
@@ -60,7 +60,6 @@ const PrescribeForm = () => {
     
   }, []);
 
-  const appointmentId = searchParams.get("appointmentId");
   const handleStartConsultation = async () => {
     try {
       const response = await startConsultation(appointmentId);
@@ -87,13 +86,20 @@ const PrescribeForm = () => {
     try {
       await endConsultation(appointmentId);
       setShowCall(false);
-      setConsultationData(null);
     } catch (error) {
-      console.error('End call error:', error);
-      toast.error('Error ending consultation: ' + error.message);
+      console.error('End consultation error:', error);
+      toast.error('Error ending consultation: ' + (error.message || 'Unknown error'));
     }
   };
   
+  const handlePrescriptionSubmit = async () => {
+    // End the call when prescription is submitted
+    if (videoCallRef.current) {
+      videoCallRef.current.endCall();
+    } else {
+      handleEndCall();
+    }
+  };
 
   const patientInfo = useMemo(() => {
     return appointment?.patientId;
@@ -106,7 +112,7 @@ const PrescribeForm = () => {
   
 
   return (
-    <div className={styles.prescriptionRoot}>
+    <div className={styles.prescribeRoot}>
       <PageTitle>Prescription</PageTitle>
       <div className={styles.userInfo}>
         <div className={styles.leftContent}>
@@ -158,7 +164,10 @@ const PrescribeForm = () => {
         </Tabs>
       </Box>
       <TabPanel value={activeTab} index={0}>
-        <DoctorReview labTests={labTests} />
+        <DoctorReview 
+          labTests={labTests} 
+          onPrescriptionSubmit={handlePrescriptionSubmit}
+        />
       </TabPanel>
       <TabPanel value={activeTab} index={1}>
         <PatientRecords patient={patientInfo} />
@@ -183,7 +192,10 @@ const PrescribeForm = () => {
             <div className={styles.consultationWrapper}>
               <div className={styles.prescriptionSection}>
                 <TabPanel value={activeTab} index={0}>
-                  <DoctorReview labTests={labTests} />
+                  <DoctorReview 
+                    labTests={labTests} 
+                    onPrescriptionSubmit={handlePrescriptionSubmit}
+                  />
                 </TabPanel>
                 <TabPanel value={activeTab} index={1}>
                   <PatientRecords patient={patientInfo} />
@@ -192,6 +204,7 @@ const PrescribeForm = () => {
               
               <div className={styles.videoSection}>
                 <VideoCall
+                  ref={videoCallRef}
                   token={consultationData.token}
                   channelName={consultationData.channelName}
                   uid={consultationData.uid}
