@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Box, Tab, Tabs } from "@mui/material";
+import { Box, Tab, Tabs, Dialog } from "@mui/material";
 import { toast } from "react-toastify";
 
 import { getAppointmentDetails } from "../../../services/doctorServices";
@@ -14,6 +14,10 @@ import WeightIcon from "../../../assets/icons/ic_weight.png";
 import HeightIcon from "../../../assets/icons/ic_height.png";
 import PatientRecords from "./Records/records";
 import { getAllTests } from '../../../services/labTestServices';
+import Button from '../../Common/Button';
+
+import VideoCall from '../../VideoConsultation';
+import { startConsultation, endConsultation } from '../../../services/consultationService';
 
 const PrescribeForm = () => {
   const [searchParams] = useSearchParams();
@@ -21,6 +25,9 @@ const PrescribeForm = () => {
   const [appointment, setAppointment] = useState(null);
   const [activeTab, setActiveTab] = React.useState(0);
   const [labTests, setLabTests] = useState([]);
+  const [showCall, setShowCall] = useState(false);
+  const [consultationData, setConsultationData] = useState(null);
+
 
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -50,7 +57,42 @@ const PrescribeForm = () => {
       fetchAppointmentDetails();
       fetchTests();
     }
+    
   }, []);
+
+  const appointmentId = searchParams.get("appointmentId");
+  const handleStartConsultation = async () => {
+    try {
+      const response = await startConsultation(appointmentId);
+      console.log('Consultation response:', response); // Debug log
+      
+      if (!response.token || !response.channelName) {
+        throw new Error('Invalid consultation data received');
+      }
+
+      setConsultationData({
+        token: response.token,
+        channelName: response.channelName,
+        consultation: response.consultation
+      });
+      setShowCall(true);
+    } catch (error) {
+      console.error('Start consultation error:', error);
+      toast.error('Error starting consultation: ' + error.message);
+    }
+  };
+
+  const handleEndCall = async () => {
+    try {
+      await endConsultation(appointmentId);
+      setShowCall(false);
+      setConsultationData(null);
+    } catch (error) {
+      console.error('End call error:', error);
+      toast.error('Error ending consultation: ' + error.message);
+    }
+  };
+  
 
   const patientInfo = useMemo(() => {
     return appointment?.patientId;
@@ -59,6 +101,8 @@ const PrescribeForm = () => {
   console.log("33333333333-patientInfo", patientInfo);
 
   if (!appointment) return <div>Loading...</div>;
+
+  
 
   return (
     <div className={styles.prescriptionRoot}>
@@ -118,6 +162,46 @@ const PrescribeForm = () => {
       <TabPanel value={activeTab} index={1}>
         <PatientRecords patient={patientInfo} />
       </TabPanel>
+      
+      <div className={styles.consultationContainer}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleStartConsultation}
+          disabled={showCall}
+        >
+          {showCall ? 'Consultation in Progress' : 'Start Consultation'}
+        </Button>
+
+        {showCall && consultationData && (
+          <Dialog
+            open={showCall}
+            fullScreen
+            onClose={handleEndCall}
+          >
+            <div className={styles.consultationWrapper}>
+              <div className={styles.prescriptionSection}>
+                <TabPanel value={activeTab} index={0}>
+                  <DoctorReview labTests={labTests} />
+                </TabPanel>
+                <TabPanel value={activeTab} index={1}>
+                  <PatientRecords patient={patientInfo} />
+                </TabPanel>
+              </div>
+              
+              <div className={styles.videoSection}>
+                <VideoCall
+                  token={consultationData.token}
+                  channelName={consultationData.channelName}
+                  onEndCall={handleEndCall}
+                  role="doctor"
+                />
+              </div>
+            </div>
+          </Dialog>
+        )}
+      </div>
+
     </div>
   );
 };

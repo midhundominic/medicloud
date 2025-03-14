@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import { Button, Dialog } from '@mui/material';
+import Consultation from '../Consultation/consultation';
 
 import { getAppointments } from "../../../services/appointmentServices";
 import CancelAppointment from "./cancelAppointment";
@@ -13,6 +15,8 @@ import PageTitle from "../../Common/PageTitle";
 const PatientAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const navigate = useNavigate();
+  const [showConsultation, setShowConsultation] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
 
   const timeSlots = [
     "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM",
@@ -50,6 +54,11 @@ const PatientAppointments = () => {
           : appointment
       )
     );
+  };
+
+  const handleStartConsultation = (appointmentId) => {
+    setSelectedAppointmentId(appointmentId);
+    setShowConsultation(true);
   };
 
   // Sort appointments by date, time slot, and canceled status
@@ -100,6 +109,15 @@ const PatientAppointments = () => {
                 <p>Date: {dayjs(appointment.appointmentDate).format("YYYY-MM-DD")}</p>
                 <p>Time Slot: {appointment.timeSlot}</p>
                 <p>Status: {appointment.status}</p>
+                {appointment.status === 'in_consultation' && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleStartConsultation(appointment._id)}
+                  >
+                    Join Consultation
+                  </Button>
+                )}
               </div>
               {appointment.status !== "canceled" && appointment.status !== "completed" && appointment.status !== "absent" && (
                 <>
@@ -127,6 +145,18 @@ const PatientAppointments = () => {
           onClick={() => navigate(ROUTES.PATIENT_APPOINTMENT)}
         />
       )}
+      <Dialog
+        open={showConsultation}
+        fullScreen
+        onClose={() => setShowConsultation(false)}
+      >
+        {selectedAppointmentId && (
+          <Consultation
+            appointmentId={selectedAppointmentId}
+            onClose={() => setShowConsultation(false)}
+          />
+        )}
+      </Dialog>
     </div>
   );
 };

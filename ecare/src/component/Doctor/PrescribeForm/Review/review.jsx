@@ -13,8 +13,7 @@ import Checkbox from "../../../Common/Checkbox";
 import Button from "../../../Common/Button";
 import { ROUTES } from "../../../../router/routes";
 import { getMedicinesList } from "../../../../services/medicineservices";
-import { submitPrescription,updatePrescription,getPrescriptionByAppointment } from "../../../../services/prescriptionServices";
-
+import { submitPrescription, updatePrescription, getPrescriptionByAppointment } from "../../../../services/prescriptionServices";
 
 const DoctorReview = ({ labTests = [] }) => {
   const [comment, setComment] = useState("");
@@ -22,6 +21,7 @@ const DoctorReview = ({ labTests = [] }) => {
   const [medicines, setMedicines] = useState(INITIAL_MEDICINE_ARR);
   const [medicineOptions, setMedicineOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [existingPrescription, setExistingPrescription] = useState(null);
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -34,21 +34,24 @@ const DoctorReview = ({ labTests = [] }) => {
         setIsLoading(true);
         // Fetch medicines list
         const medicinesList = await getMedicinesList();
-        setMedicineOptions(
-          medicinesList.map((med) => ({
-            label: med.name,
-            value: med._id,
-            stock: med.stockQuantity,
-          }))
-        );
+        const formattedMedicineOptions = medicinesList.map((med) => ({
+          label: med.name,
+          value: med._id,
+          stock: med.stockQuantity,
+        }));
+        
+        setMedicineOptions(formattedMedicineOptions);
 
         // If update mode, fetch existing prescription
         if (isUpdateMode && appointmentId) {
           try {
+            console.log("Fetching prescription for appointment:", appointmentId);
             const response = await getPrescriptionByAppointment(appointmentId);
+            console.log("Prescription data:", response);
 
             if (response?.data) {
               const prescriptionData = response.data;
+              setExistingPrescription(prescriptionData);
               setComment(prescriptionData.notes || '');
               
               // Handle tests
@@ -70,7 +73,9 @@ const DoctorReview = ({ labTests = [] }) => {
                   bf: med.beforeFood || false
                 }));
                 
-                setMedicines([...formattedMedicines, ...INITIAL_MEDICINE_ARR]);
+                if (formattedMedicines.length > 0) {
+                  setMedicines([...formattedMedicines, ...INITIAL_MEDICINE_ARR]);
+                }
               }
             }
           } catch (error) {
@@ -146,10 +151,7 @@ const DoctorReview = ({ labTests = [] }) => {
         // Store both label and value for medicine
         updatedItems[index] = {
           ...updatedItems[index],
-          name: {
-            label: newValue.label,
-            value: newValue.value
-          }
+          name: newValue
         };
       } else {
         updatedItems[index] = { 
@@ -189,7 +191,7 @@ const DoctorReview = ({ labTests = [] }) => {
               <AutoCompleteInput
                 options={medicineOptions}
                 label="Medicine"
-                value={medicine.name?.label || ""}
+                value={medicine.name}
                 handleChange={(event, newValue) =>
                   handleChangeMedicine(newValue, "name", index)
                 }
@@ -224,6 +226,7 @@ const DoctorReview = ({ labTests = [] }) => {
               <FormControlLabel
                 control={
                   <Switch
+                    checked={medicine.isSOS || false}
                     onChange={(e) =>
                       handleChangeMedicine(
                         { value: e.target.checked },
@@ -269,7 +272,7 @@ const DoctorReview = ({ labTests = [] }) => {
 
         <div className={styles.btnContainer}>
           <Button type="submit" styles={{ btnPrimary: styles.customBtn }}>
-            Submit Prescription
+            {isUpdateMode ? "Update Prescription" : "Submit Prescription"}
           </Button>
         </div>
       </form>

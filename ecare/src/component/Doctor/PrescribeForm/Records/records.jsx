@@ -43,15 +43,28 @@ const PatientRecords = ({ patient }) => {
   useEffect(() => {
     if (patient?._id) {
       fetchPrescriptionHistory();
+    } else {
+      setLoading(false);
     }
   }, [patient]);
 
   const fetchPrescriptionHistory = async () => {
     try {
-      const response = await getPrescriptionHistory(patient._id);
-      setPrescriptions(response.data);
+      const res = await getPrescriptionHistory(patient._id);
+      const response = res.data;
+      console.log("Prescription history response:", response);
+      
+      // Ensure we're setting an array
+      if (response && response.data&& Array.isArray(response.data)) {
+        setPrescriptions(response.data);
+      } else {
+        console.error("Expected array but got:", response.data);
+        setPrescriptions([]);
+      }
     } catch (error) {
+      console.error("Error fetching prescription history:", error);
       toast.error('Error fetching prescription history');
+      setPrescriptions([]);
     } finally {
       setLoading(false);
     }
@@ -74,7 +87,7 @@ const PatientRecords = ({ patient }) => {
       <Typography variant="subtitle2" className={styles.sectionTitle}>
         Medicines Prescribed
       </Typography>
-      {medicines.map((med, index) => (
+      {medicines && medicines.map((med, index) => (
         <Box key={index} className={styles.medicineItem}>
           <Typography variant="body2">
             {med.medicine?.name || 'Unknown Medicine'} - {med.frequency || 'N/A'}
@@ -88,151 +101,174 @@ const PatientRecords = ({ patient }) => {
     </div>
   );
 
-  const renderPrescriptionHistory = () => (
-    <div className={styles.prescriptionContainer}>
-      {prescriptions.map((record) => (
-        <Accordion key={record._id} className={styles.recordAccordion}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <div className={styles.summaryContent}>
-              <span>{dayjs(record.createdAt).format("DD MMM YYYY")}</span>
-              <span>
-                Dr. {record.doctorId?.firstName} {record.doctorId?.lastName}
-              </span>
-            </div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className={styles.prescriptionDetails}>
-              {record.medicines?.length > 0 && (
-                <div className={styles.section}>
-                  <h3>Medicines</h3>
-                  <ul>
-                    {record.medicines.map((medicine, idx) => (
-                      <li key={idx}>
-                        <span>{medicine.medicine?.name}</span>
-                        <span>{medicine.frequency} for {medicine.days} days</span>
-                        <span>{medicine.beforeFood ? "Before food" : "After food"}</span>
-                        {medicine.isSOS && <Chip size="small" label="SOS" color="warning" />}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+  const renderPrescriptionHistory = () => {
+    if (!Array.isArray(prescriptions) || prescriptions.length === 0) {
+      return (
+        <div className={styles.noRecordsContainer}>
+          <Typography variant="h6">No prescription records found</Typography>
+          <Typography variant="body2">This patient has no previous prescriptions</Typography>
+        </div>
+      );
+    }
 
-              {record.tests?.length > 0 && (
-                <div className={styles.section}>
-                  <h3>Tests</h3>
-                  <ul>
-                    {record.tests.map((test, idx) => (
-                      <li key={idx} className={styles.testItem}>
-                        <span>{test.testName}</span>
-                        {test.resultId ? (
-                          <Button
-                            startIcon={<DownloadIcon />}
-                            onClick={() => handleDownload(test.resultId._id)}
-                            variant="contained"
-                            size="small"
-                          >
-                            Download Result
-                          </Button>
-                        ) : (
-                          <span className={styles.pendingResult}>Pending</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {record.notes && (
-                <div className={styles.section}>
-                  <h3>Notes</h3>
-                  <p>{record.notes}</p>
-                </div>
-              )}
-
-              <div className={styles.actionButtons}>
-                <PDFDownloadLink
-                  document={
-                    <PrescriptionTemplate
-                      prescription={record}
-                      doctor={record.doctorId}
-                      patient={{
-                        name: patient.name,
-                        age: patient.age,
-                        gender: patient.gender,
-                      }}
-                    />
-                  }
-                  fileName={`prescription_${dayjs(record.createdAt).format('DDMMYYYY')}.pdf`}
-                >
-                  {({ loading }) => (
-                    <Button
-                      startIcon={<DownloadIcon />}
-                      variant="contained"
-                      disabled={loading}
-                    >
-                      {loading ? 'Generating...' : 'Download Prescription'}
-                    </Button>
-                  )}
-                </PDFDownloadLink>
+    return (
+      <div className={styles.prescriptionContainer}>
+        {prescriptions.map((record) => (
+          <Accordion key={record._id} className={styles.recordAccordion}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <div className={styles.summaryContent}>
+                <span>{dayjs(record.createdAt).format("DD MMM YYYY")}</span>
+                <span>
+                  Dr. {record.doctorId?.firstName} {record.doctorId?.lastName}
+                </span>
               </div>
-            </div>
-          </AccordionDetails>
-        </Accordion>
-      ))}
-    </div>
-  );
+            </AccordionSummary>
+            <AccordionDetails>
+              <div className={styles.prescriptionDetails}>
+                {record.medicines?.length > 0 && (
+                  <div className={styles.section}>
+                    <h3>Medicines</h3>
+                    <ul>
+                      {record.medicines.map((medicine, idx) => (
+                        <li key={idx}>
+                          <span>{medicine.medicine?.name || 'Unknown Medicine'}</span>
+                          <span>{medicine.frequency} for {medicine.days} days</span>
+                          <span>{medicine.beforeFood ? "Before food" : "After food"}</span>
+                          {medicine.isSOS && <Chip size="small" label="SOS" color="warning" />}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-  const renderTestResults = () => (
-    <Paper className={styles.tableContainer}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Test Name</TableCell>
-            <TableCell>Doctor</TableCell>
-            <TableCell>Laboratory Remarks</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {prescriptions.map((prescription) => (
-            prescription.tests.map((test) => (
-              test.resultId && (
-                <TableRow key={test.resultId._id}>
-                  <TableCell>
-                    {dayjs(test.resultId.uploadDate).format("DD MMM YYYY")}
-                  </TableCell>
-                  <TableCell>{test.testName}</TableCell>
-                  <TableCell>
-                    Dr. {prescription.doctorId.firstName} {prescription.doctorId.lastName}
-                  </TableCell>
-                  <TableCell>{test.resultId.remarks}</TableCell>
-                  <TableCell className={styles.actionButtons}>
-                    <Button
-                      startIcon={<VisibilityIcon />}
-                      onClick={() => {
-                        setSelectedTest(test.resultId);
-                        setViewDialogOpen(true);
-                      }}
-                    >
-                      View
-                    </Button>
-                    <Button
-                      startIcon={<DownloadIcon />}
-                      onClick={() => handleDownload(test.resultId._id)}
-                    >
-                      Download
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              )
-            ))
-          ))}
-        </TableBody>
-      </Table>
-    </Paper>
-  );
+                {record.tests?.length > 0 && (
+                  <div className={styles.section}>
+                    <h3>Tests</h3>
+                    <ul>
+                      {record.tests.map((test, idx) => (
+                        <li key={idx} className={styles.testItem}>
+                          <span>{test.testName}</span>
+                          {test.resultId ? (
+                            <Button
+                              startIcon={<DownloadIcon />}
+                              onClick={() => handleDownload(test.resultId._id)}
+                              variant="contained"
+                              size="small"
+                            >
+                              Download Result
+                            </Button>
+                          ) : (
+                            <span className={styles.pendingResult}>Pending</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {record.notes && (
+                  <div className={styles.section}>
+                    <h3>Notes</h3>
+                    <p>{record.notes}</p>
+                  </div>
+                )}
+
+                <div className={styles.actionButtons}>
+                  <PDFDownloadLink
+                    document={
+                      <PrescriptionTemplate
+                        prescription={record}
+                        doctor={record.doctorId}
+                        patient={{
+                          name: patient.name,
+                          age: patient.age,
+                          gender: patient.gender,
+                        }}
+                      />
+                    }
+                    fileName={`prescription_${dayjs(record.createdAt).format('DDMMYYYY')}.pdf`}
+                  >
+                    {({ loading }) => (
+                      <Button
+                        startIcon={<DownloadIcon />}
+                        variant="contained"
+                        disabled={loading}
+                      >
+                        {loading ? 'Generating...' : 'Download Prescription'}
+                      </Button>
+                    )}
+                  </PDFDownloadLink>
+                </div>
+              </div>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </div>
+    );
+  };
+
+  const renderTestResults = () => {
+    if (!Array.isArray(prescriptions) || prescriptions.length === 0 || 
+        !prescriptions.some(p => p.tests && p.tests.some(t => t.resultId))) {
+      return (
+        <div className={styles.noRecordsContainer}>
+          <Typography variant="h6">No test results found</Typography>
+          <Typography variant="body2">This patient has no completed test results</Typography>
+        </div>
+      );
+    }
+
+    return (
+      <Paper className={styles.tableContainer}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Date</TableCell>
+              <TableCell>Test Name</TableCell>
+              <TableCell>Doctor</TableCell>
+              <TableCell>Laboratory Remarks</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {prescriptions.map((prescription) => (
+              Array.isArray(prescription.tests) && prescription.tests.map((test) => (
+                test.resultId && (
+                  <TableRow key={`${prescription._id}-${test._id}`}>
+                    <TableCell>
+                      {dayjs(test.resultId.uploadDate).format("DD MMM YYYY")}
+                    </TableCell>
+                    <TableCell>{test.testName}</TableCell>
+                    <TableCell>
+                      Dr. {prescription.doctorId?.firstName} {prescription.doctorId?.lastName}
+                    </TableCell>
+                    <TableCell>{test.resultId.remarks}</TableCell>
+                    <TableCell className={styles.actionButtons}>
+                      <Button
+                        startIcon={<VisibilityIcon />}
+                        onClick={() => {
+                          setSelectedTest(test.resultId);
+                          setViewDialogOpen(true);
+                        }}
+                      >
+                        View
+                      </Button>
+                      <Button
+                        startIcon={<DownloadIcon />}
+                        onClick={() => handleDownload(test.resultId._id)}
+                      >
+                        Download
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                )
+              ))
+            ))}
+          </TableBody>
+        </Table>
+      </Paper>
+    );
+  };
 
   if (loading) {
     return (

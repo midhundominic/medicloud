@@ -19,44 +19,62 @@ import { useDoctor } from "../../../context/doctorContext";
 const DoctorAppointments = () => {
   const { doctor } = useDoctor();
   const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchDoctorAppointments();
   }, []);
+  
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const doctorId = userData?.doctorId;
 
   const fetchDoctorAppointments = async () => {
     try {
+      setLoading(true);
       const userData = JSON.parse(localStorage.getItem("userData"));
       const doctorId = userData?.doctorId;
 
       if (!doctorId) {
         console.error("Doctor ID not found");
+        setLoading(false);
         return;
       }
 
       const res = await getDoctorAppointments(doctorId);
-      if (res && res.data && res.data.appointments) {
-        const modifiedList = res.data.appointments.map((data) => {
-          const endTime = addMinutes(data.appointmentDate, "25");
-          return {
-            title: data.patientId.name,
-            start: data.appointmentDate,
-            end: endTime,
-            status: data.status,
-            ...data,
-          };
-        });
+      if (res && res.data && Array.isArray(res.data.appointments)) {
+        const modifiedList = res.data.appointments
+          .filter(data => data && data.patientId) // Filter out appointments with null patientId
+          .map((data) => {
+            const endTime = addMinutes(data.appointmentDate, "25");
+            return {
+              title: data.patientId?.name || "Unknown Patient",
+              start: data.appointmentDate,
+              end: endTime,
+              status: data.status,
+              ...data,
+            };
+          });
         setAppointments(modifiedList);
       } else {
+        console.warn("No appointments found or invalid response format:", res);
         setAppointments([]);
       }
     } catch (error) {
       console.error("Error fetching doctor appointments:", error);
+      toast.error("Failed to load appointments. Please try again.");
+      setAppointments([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleMarkAbsent = async (appointmentId, callBack) => {
+    if (!appointmentId) {
+      toast.error("Invalid appointment");
+      return;
+    }
+    
     const confirmed = await Swal.fire({
       title: "Are you sure?",
       text: "Do you want to mark the patient as absent?",
@@ -70,45 +88,65 @@ const DoctorAppointments = () => {
       try {
         await markPatientAbsent(appointmentId);
         toast.success("Patient marked as absent");
-        callBack();
+        if (typeof callBack === 'function') {
+          callBack();
+        }
         fetchDoctorAppointments();
       } catch (error) {
+        console.error("Error marking patient as absent:", error);
         toast.error("Error marking patient as absent");
       }
     }
   };
 
   const handleStartConsultation = async (appointmentId) => {
+    if (!appointmentId) {
+      toast.error("Invalid appointment");
+      return;
+    }
+    
     try {
       await startConsultation(appointmentId);
       navigate(
-        `${ROUTES.DOCTOR_PRESCRIPTION}?appointmentId=${appointmentId}&doctorId=${doctor?.doctorId}`
+        `${ROUTES.DOCTOR_PRESCRIPTION}?appointmentId=${appointmentId}&doctorId=${doctorId}`
       );
     } catch (error) {
+      console.error("Error starting consultation:", error);
       toast.error("Error starting consultation");
     }
   };
 
   const handleUpdatePrescription = (appointmentId) => {
+    if (!appointmentId) {
+      toast.error("Invalid appointment");
+      return;
+    }
+    
     navigate(
-      `${ROUTES.DOCTOR_PRESCRIPTION}?appointmentId=${appointmentId}&doctorId=${doctor?.doctorId}&mode=update`
+      `${ROUTES.DOCTOR_PRESCRIPTION}?appointmentId=${appointmentId}&doctorId=${doctorId}&mode=update`
     );
   };
 
   return (
     <div className={styles.docAppointmentRoot}>
       <PageTitle>Appointments</PageTitle>
-      <Calendar
-        events={appointments}
-        renderEventPopover={({ appointment, callBack }) => (
-          <EventPopover
-            appointment={appointment}
-            handleMarkAbsent={(id) => handleMarkAbsent(id, callBack)}
-            handleStartConsultation={handleStartConsultation}
-            handleUpdatePrescription={handleUpdatePrescription}
-          />
-        )}
-      />
+      {loading ? (
+        <div className={styles.loadingContainer}>
+          <p>Loading appointments...</p>
+        </div>
+      ) : (
+        <Calendar
+          events={appointments}
+          renderEventPopover={({ appointment, callBack }) => (
+            <EventPopover
+              appointment={appointment}
+              handleMarkAbsent={(id) => handleMarkAbsent(id, callBack)}
+              handleStartConsultation={handleStartConsultation}
+              handleUpdatePrescription={handleUpdatePrescription}
+            />
+          )}
+        />
+      )}
     </div>
   );
 };
