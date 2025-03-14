@@ -4,6 +4,8 @@ const DoctorModel = require("../models/doctorModel");
 const DoctorLeave = require("../models/doctorLeaveModel");
 const { sendEmail } = require("../services/emailservice");
 const { TIME_SLOTS } = require('../utils/constant')
+const ConsultationModel = require('../models/consultationModel');
+const { RtcTokenBuilder, RtcRole } = require('agora-access-token');
 
 const createAppointment = async (req, res) => {
   const { patientId, doctorId, appointmentDate, timeSlot } = req.body;
@@ -262,18 +264,128 @@ const markPatientAbsent = async(req,res) =>{
 };
 
 const startConsultation = async (req, res) => {
-  const { appointmentId } = req.params;
   try {
-    const appointment = await AppointmentModel.findByIdAndUpdate(
-      appointmentId,
-      { status: 'in_consultation' },
-      { new: true }
-    );
+    const { appointmentId } = req.params;
+    
+    const appointment = await AppointmentModel.findById(appointmentId)
+      .populate('doctorId')
+      .populate('patientId');
+
     if (!appointment) {
-      return res.status(404).json({ message: "Appointment not found" });
+      return res.status(404).json({ message: 'Appointment not found' });
     }
-    res.status(201).json({ message: "Consultation started", appointment });
+
+    // Generate a unique channel name
+    const channelName = `consultation_${appointmentId}`;
+    
+    // Generate token for the consultation
+    const appID = process.env.VITE_AGORA_APP_ID;
+    const appCertificate = process.env.AGORA_APP_CERTIFICATE;
+    const uid = 0; // Use 0 for the first user, Agora will assign a uid
+    const role = RtcRole.PUBLISHER;
+    const expirationTimeInSeconds = 3600;
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+
+    // Generate token
+    const token = RtcTokenBuilder.buildTokenWithUid(
+      appID,
+      appCertificate,
+      channelName,
+      uid,
+      role,
+      privilegeExpiredTs
+    );
+
+    // Create or update consultation
+    const consultation = await ConsultationModel.findOneAndUpdate(
+      { appointmentId },
+      {
+        channelName,
+        status: 'waiting',
+        startTime: new Date()
+      },
+      { upsert: true, new: true }
+    );
+
+    // Update appointment status
+    appointment.status = 'in_consultation';
+    await appointment.save();
+
+    res.status(200).json({
+      consultation,
+      token,
+      channelName
+    });
   } catch (error) {
+    console.error('Error starting consultation:', error);
+    res.status(500).json({ 
+      message: 'Error starting consultation',
+      error: error.message 
+    });
+  }
+};
+
+const joinConsultation = async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    
+    const consultation = await ConsultationModel.findOne({ appointmentId });
+    if (!consultation) {
+      return res.status(404).json({ message: 'Consultation not found' });
+    }
+
+    // Generate new token for joining user
+    const appID = process.env.VITE_AGORA_APP_ID;
+    const appCertificate = process.env.AGORA_APP_CERTIFICATE;
+    const uid = 0; // Use 0, Agora will assign a uid
+    const role = RtcRole.PUBLISHER;
+    const expirationTimeInSeconds = 3600;
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+
+    const token = RtcTokenBuilder.buildTokenWithUid(
+      appID,
+      appCertificate,
+      consultation.channelName,
+      uid,
+      role,
+      privilegeExpiredTs
+    );
+
+    res.status(200).json({
+      consultation,
+      token,
+      channelName: consultation.channelName
+    });
+  } catch (error) {
+    console.error('Error joining consultation:', error);
+    res.status(500).json({ 
+      message: 'Error joining consultation',
+      error: error.message 
+    });
+  }
+};
+
+const endConsultation = async (req, res) => {
+  const { appointmentId } = req.params;
+  
+  try {
+    const consultation = await ConsultationModel.findOneAndUpdate(
+      { appointmentId },
+      { 
+        status: 'completed',
+        endTime: new Date()
+      }
+    );
+
+    if (!consultation) {
+      return res.status(404).json({ message: "Consultation not found" });
+    }
+
+    res.status(200).json({ message: "Consultation ended successfully" });
+  } catch (error) {
+    console.error("Error ending consultation:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -450,6 +562,8 @@ module.exports = {
   getAllAppointments,
   markPatientAbsent,
   startConsultation,
+  joinConsultation,
+  endConsultation,
   submitPrescription,
   getPatientRecords,
   getPendingTests,

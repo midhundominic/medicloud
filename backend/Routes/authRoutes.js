@@ -219,5 +219,10 @@ router.post('/prescription/analyze',authMiddleware,prescriptionUpload,prescripti
 router.post('/health/analyze',healthAssistantControllers.analyzeHealth);
 router.post('/health/chat',healthAssistantControllers.chatWithAI);
 
+//Consultation
+router.post('/consultation/appointments/:appointmentId/start-consultation', appointmentControllers.startConsultation);
+router.post('/consultation/appointments/:appointmentId/join-consultation', appointmentControllers.joinConsultation);
+router.post('/consultation/appointments/:appointmentId/end-consultation', appointmentControllers.endConsultation);
+
 
 module.exports = router;
