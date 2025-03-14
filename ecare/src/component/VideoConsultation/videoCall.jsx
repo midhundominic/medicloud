@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import { Button } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
@@ -9,9 +9,7 @@ import CallEndIcon from '@mui/icons-material/CallEnd';
 import styles from './videoCall.module.css';
 import { toast } from 'react-toastify';
 
-const AGORA_APP_ID = import.meta.env.VITE_AGORA_APP_ID || "96249a25d61f41649a2ee2b62f9978ba";
-
-const VideoCall = ({ token, channelName, onEndCall, role }) => {
+const VideoCall = ({ token, channelName, uid, onEndCall, role }) => {
   const [localVideoTrack, setLocalVideoTrack] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
@@ -19,8 +17,32 @@ const VideoCall = ({ token, channelName, onEndCall, role }) => {
   const [remoteUsers, setRemoteUsers] = useState([]);
   const [hasDevicePermission, setHasDevicePermission] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
-
-  const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+  const [connectionError, setConnectionError] = useState(null);
+  
+  const clientRef = useRef(null);
+  const localVideoRef = useRef(null);
+  const remoteVideoRefs = useRef({});
+  
+  // Initialize client only once
+  useEffect(() => {
+    clientRef.current = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+    
+    // Set up event handlers
+    clientRef.current.on('user-published', handleUserPublished);
+    clientRef.current.on('user-unpublished', handleUserUnpublished);
+    clientRef.current.on('connection-state-change', (state) => {
+      console.log('Connection state changed to:', state);
+    });
+    clientRef.current.on('error', (err) => {
+      console.error('Agora client error:', err);
+      setConnectionError(`Connection error: ${err.message}`);
+      toast.error(`Video call error: ${err.message}`);
+    });
+    
+    return () => {
+      cleanup();
+    };
+  }, []);
 
   useEffect(() => {
     const requestPermissions = async () => {
@@ -30,6 +52,7 @@ const VideoCall = ({ token, channelName, onEndCall, role }) => {
       } catch (error) {
         console.error('Error getting media permissions:', error);
         toast.error('Please allow camera and microphone access');
+        setConnectionError('Camera or microphone access denied');
       }
     };
 
@@ -38,68 +61,65 @@ const VideoCall = ({ token, channelName, onEndCall, role }) => {
 
   useEffect(() => {
     const init = async () => {
-      if (!hasDevicePermission) return;
+      if (!hasDevicePermission || !token || !channelName) return;
       
       try {
-        if (!token || !channelName) {
-          throw new Error('Missing token or channel name');
-        }
-
-        if (!AGORA_APP_ID) {
-          throw new Error('Agora App ID is not configured');
-        }
-
+        console.log('Joining with token:', token.substring(0, 20) + '...');
+        console.log('Channel name:', channelName);
+        const AGORA_APP_ID = import.meta.env.VITE_AGORA_APP_ID || "96249a25d61f41649a2ee2b62f9978ba";
+        
         // Join the channel
-        console.log('Joining channel:', channelName);
-        await client.join(
+        const uidToUse = uid || null; // Use provided UID or let Agora assign one
+        await clientRef.current.join(
           AGORA_APP_ID,
           channelName,
           token,
-          null
+          uidToUse
         );
+        
         setIsJoined(true);
-        console.log('Successfully joined channel');
+        console.log('Successfully joined channel with UID:', uidToUse);
 
         // Create tracks after successfully joining
         const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-        const videoTrack = await AgoraRTC.createCameraVideoTrack();
+        const videoTrack = await AgoraRTC.createCameraVideoTrack({
+          encoderConfig: '720p', // Set higher quality
+          optimizationMode: 'detail' // Prioritize video quality
+        });
 
         setLocalAudioTrack(audioTrack);
         setLocalVideoTrack(videoTrack);
 
-        // Publish tracks only after they're created
-        console.log('Publishing tracks');
-        await client.publish([audioTrack, videoTrack]);
+        // Publish tracks
+        await clientRef.current.publish([audioTrack, videoTrack]);
         console.log('Tracks published successfully');
 
         // Play local video
-        const localContainer = document.getElementById('local-video');
-        if (localContainer && videoTrack) {
-          videoTrack.play('local-video');
+        if (localVideoRef.current && videoTrack) {
+          videoTrack.play(localVideoRef.current);
         }
-
-        // Set up event handlers
-        client.on('user-published', handleUserPublished);
-        client.on('user-unpublished', handleUserUnpublished);
 
       } catch (error) {
         console.error('Error in init:', error);
+        setConnectionError(`Failed to join: ${error.message}`);
         toast.error('Failed to join video call: ' + error.message);
-        cleanup();
-        onEndCall();
       }
     };
 
     init();
+  }, [hasDevicePermission, token, channelName, uid]);
 
-    return () => {
-      cleanup();
-    };
-  }, [hasDevicePermission, token, channelName]);
+  // Effect to handle local video rendering when ref or track changes
+  useEffect(() => {
+    if (localVideoRef.current && localVideoTrack) {
+      localVideoTrack.play(localVideoRef.current);
+    }
+  }, [localVideoTrack]);
 
   const handleUserPublished = async (user, mediaType) => {
     try {
-      await client.subscribe(user, mediaType);
+      console.log(`Remote user ${user.uid} published ${mediaType}`);
+      await clientRef.current.subscribe(user, mediaType);
       
       if (mediaType === 'video') {
         setRemoteUsers(prev => {
@@ -108,31 +128,56 @@ const VideoCall = ({ token, channelName, onEndCall, role }) => {
           }
           return prev;
         });
-        user.videoTrack.play(`remote-video-${user.uid}`);
+        
+        // Create a ref for this user if it doesn't exist
+        if (!remoteVideoRefs.current[user.uid]) {
+          remoteVideoRefs.current[user.uid] = React.createRef();
+        }
+        
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          if (remoteVideoRefs.current[user.uid]?.current && user.videoTrack) {
+            user.videoTrack.play(remoteVideoRefs.current[user.uid].current);
+            console.log(`Playing remote video for user ${user.uid}`);
+          } else {
+            console.error(`Failed to play remote video for user ${user.uid}`, {
+              hasRef: !!remoteVideoRefs.current[user.uid]?.current,
+              hasTrack: !!user.videoTrack
+            });
+          }
+        }, 500);
       }
-      if (mediaType === 'audio') {
+      
+      if (mediaType === 'audio' && user.audioTrack) {
         user.audioTrack.play();
+        console.log(`Playing remote audio for user ${user.uid}`);
       }
     } catch (error) {
       console.error('Error handling published user:', error);
     }
   };
 
-  const handleUserUnpublished = (user) => {
-    setRemoteUsers(prev => prev.filter(u => u.uid !== user.uid));
+  const handleUserUnpublished = (user, mediaType) => {
+    console.log(`Remote user ${user.uid} unpublished ${mediaType}`);
+    if (mediaType === 'video') {
+      setRemoteUsers(prev => prev.filter(u => u.uid !== user.uid));
+    }
   };
 
   const cleanup = async () => {
     try {
       if (localAudioTrack) {
         localAudioTrack.close();
+        setLocalAudioTrack(null);
       }
       if (localVideoTrack) {
         localVideoTrack.close();
+        setLocalVideoTrack(null);
       }
-      if (isJoined) {
-        await client.leave();
+      if (clientRef.current && isJoined) {
+        await clientRef.current.leave();
         setIsJoined(false);
+        setRemoteUsers([]);
       }
     } catch (error) {
       console.error('Error in cleanup:', error);
@@ -161,41 +206,32 @@ const VideoCall = ({ token, channelName, onEndCall, role }) => {
   return (
     <div className={styles.videoCallContainer}>
       <div className={styles.videoGrid}>
-        {remoteUsers.length > 0 ? (
-          <>
-            {remoteUsers.map(user => (
-              <div 
-                id={`remote-video-${user.uid}`} 
-                key={user.uid} 
-                className={styles.videoFrame}
-              >
-                <div className={styles.userLabel}>
-                  {role === 'doctor' ? 'Patient' : 'Doctor'}
-                </div>
-                {isJoined && (
-                  <div className={styles.connectionStatus}>
-                    Connected
-                  </div>
-                )}
-              </div>
-            ))}
-            <div className={styles.localVideoContainer} id="local-video">
-              <div className={styles.userLabel}>You</div>
+        <div className={styles.videoFrame}>
+          <div ref={localVideoRef} className={styles.videoElement}></div>
+          <div className={styles.userLabel}>You ({role})</div>
+          {connectionError && (
+            <div className={styles.errorMessage}>{connectionError}</div>
+          )}
+        </div>
+        
+        {remoteUsers.map(user => (
+          <div 
+            key={user.uid} 
+            className={styles.videoFrame}
+          >
+            <div 
+              ref={remoteVideoRefs.current[user.uid]} 
+              className={styles.videoElement}
+            ></div>
+            <div className={styles.userLabel}>
+              {role === 'doctor' ? 'Patient' : 'Doctor'}
             </div>
-          </>
-        ) : (
-          <div className={styles.videoFrame} id="local-video">
-            <div className={styles.userLabel}>You</div>
-            {!hasDevicePermission && (
-              <div className={styles.permissionPrompt}>
-                Please allow camera and microphone access
-              </div>
-            )}
-            {isJoined && !remoteUsers.length && (
-              <div className={styles.permissionPrompt}>
-                Waiting for {role === 'doctor' ? 'patient' : 'doctor'} to join...
-              </div>
-            )}
+          </div>
+        ))}
+        
+        {isJoined && remoteUsers.length === 0 && (
+          <div className={styles.waitingMessage}>
+            Waiting for {role === 'doctor' ? 'patient' : 'doctor'} to join...
           </div>
         )}
       </div>
@@ -205,7 +241,7 @@ const VideoCall = ({ token, channelName, onEndCall, role }) => {
           onClick={toggleAudio}
           variant="contained"
           color={isAudioMuted ? "error" : "primary"}
-          disabled={!isJoined}
+          disabled={!isJoined || !localAudioTrack}
           className={styles.controlButton}
         >
           {isAudioMuted ? <MicOffIcon /> : <MicIcon />}
@@ -214,7 +250,7 @@ const VideoCall = ({ token, channelName, onEndCall, role }) => {
           onClick={toggleVideo}
           variant="contained"
           color={isVideoMuted ? "error" : "primary"}
-          disabled={!isJoined}
+          disabled={!isJoined || !localVideoTrack}
           className={styles.controlButton}
         >
           {isVideoMuted ? <VideocamOffIcon /> : <VideocamIcon />}

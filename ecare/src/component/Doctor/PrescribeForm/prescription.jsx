@@ -64,21 +64,22 @@ const PrescribeForm = () => {
   const handleStartConsultation = async () => {
     try {
       const response = await startConsultation(appointmentId);
-      console.log('Consultation response:', response); // Debug log
+      console.log('Consultation response:', response);
       
-      if (!response.token || !response.channelName) {
+      if (!response.consultation) {
         throw new Error('Invalid consultation data received');
       }
 
       setConsultationData({
         token: response.token,
-        channelName: response.channelName,
+        channelName: response.consultation.channelName,
+        uid: response.uid,
         consultation: response.consultation
       });
       setShowCall(true);
     } catch (error) {
       console.error('Start consultation error:', error);
-      toast.error('Error starting consultation: ' + error.message);
+      toast.error('Error starting consultation: ' + (error.message || 'Unknown error'));
     }
   };
 
@@ -193,6 +194,7 @@ const PrescribeForm = () => {
                 <VideoCall
                   token={consultationData.token}
                   channelName={consultationData.channelName}
+                  uid={consultationData.uid}
                   onEndCall={handleEndCall}
                   role="doctor"
                 />

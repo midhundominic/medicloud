@@ -33,14 +33,22 @@ const Consultation = ({ appointmentId, onClose }) => {
   const handleJoinCall = async () => {
     try {
       const response = await joinConsultation(appointmentId);
+      console.log('Join consultation response:', response);
+      
+      if (!response.consultation) {
+        throw new Error('Invalid consultation data received');
+      }
+      
       setConsultation(prev => ({ 
         ...prev, 
         token: response.token, 
-        channelName: response.channelName 
+        channelName: response.consultation.channelName,
+        uid: response.uid
       }));
       setShowCall(true);
     } catch (error) {
-      toast.error('Error joining consultation');
+      console.error('Join consultation error:', error);
+      toast.error('Error joining consultation: ' + (error.message || 'Unknown error'));
     }
   };
 
@@ -120,6 +128,7 @@ const Consultation = ({ appointmentId, onClose }) => {
               <VideoCall
                 token={consultation.token}
                 channelName={consultation.channelName}
+                uid={consultation.uid}
                 onEndCall={handleEndCall}
                 role="patient"
               />
