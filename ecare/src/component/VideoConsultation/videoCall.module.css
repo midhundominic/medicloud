@@ -7,7 +7,7 @@
   
   .videoGrid {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 16px;
     flex: 1;
     padding: 16px;
@@ -15,11 +15,12 @@
   
   .videoFrame {
     position: relative;
-    width: calc(50% - 8px);
+    width: 100%;
     height: 300px;
     background-color: #1a1a1a;
     border-radius: 8px;
     overflow: hidden;
+    margin-bottom: 16px;
   }
   
   .videoElement {
@@ -122,10 +123,4 @@
     padding: 16px;
     border-radius: 8px;
     width: 80%;
-  }
-  
-  @media (max-width: 768px) {
-    .videoFrame {
-      width: 100%;
-    }
   }
