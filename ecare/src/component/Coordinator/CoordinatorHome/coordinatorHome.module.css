@@ -1,0 +1,181 @@
+.container {
+    padding: 20px;
+  }
+  
+  .titleContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  .title {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+  }
+  
+  .notificationWrapper {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    background-color: #3f51b5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .notificationStatus {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    background-color: #f44336;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+  
+  .filterContainer {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .searchField {
+    flex: 1;
+  }
+  
+  .filterSelect {
+    min-width: 150px;
+  }
+  
+  .tableContainer {
+    margin-top: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+  }
+  
+  /* Dialog styles */
+  .dialogTitle {
+    padding-bottom: 8px;
+  }
+  
+  .dialogTitleContent {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .detailsContainer {
+    padding: 16px 0;
+  }
+  
+  .detailsSection {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 16px;
+    height: 100%;
+  }
+  
+  .sectionHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .sectionIcon {
+    margin-right: 8px;
+    color: #3f51b5;
+  }
+  
+  .sectionDivider {
+    margin-bottom: 16px !important;
+  }
+  
+  .detailsSection h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+  }
+  
+  .detailsSection h4 {
+    margin: 16px 0 8px;
+    color: #555;
+    font-size: 16px;
+  }
+  
+  .detailsSection p {
+    margin: 8px 0;
+    color: #555;
+  }
+  
+  .deliveryStatus {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .statusChip {
+    font-weight: 500;
+  }
+  
+  .statusActions {
+    margin-top: 16px;
+  }
+  
+  .statusButtons {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  
+  .medicinesTable {
+    margin-top: 16px;
+    background-color: white;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .prescriptionDetails {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px dashed #ddd;
+  }
+  
+  .medicinesList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .medicineItem {
+    padding: 12px;
+    margin-bottom: 8px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .medicineName {
+    font-weight: 500;
+  }
+  
+  .medicineDetails {
+    color: #666;
+    font-size: 0.9em;
+  }
+  

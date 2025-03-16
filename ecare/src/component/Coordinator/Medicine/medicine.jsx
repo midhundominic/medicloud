@@ -16,7 +16,19 @@ import {
   CircularProgress,
   Autocomplete,
   MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
 } from "@mui/material";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -34,33 +46,32 @@ import {
   deleteMedicine,
   getMedicineSuggestions,
   getMedicineDetails,
-  updateMedicine
-} from "../../../services/medicineservices";
-
+  updateMedicine,
+  getMedicineStock
+} from "../../../services/medicineServices";
 
 const MedicineList = () => {
   const [medicines, setMedicines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [openStockDialog, setOpenStockDialog] = useState(false);
+  const [selectedMedicine, setSelectedMedicine] = useState(null);
+  const [stockDetails, setStockDetails] = useState([]);
   const [newMedicine, setNewMedicine] = useState({
     name: "",
     medicineType: "tablet",
-    stock: {
-      quantity: 0,
-      unitsPerPack: 0,
-      batchNumber: "",
-      expiryDate: "",
-      type: "strip"
-    },
-    price: 0,
     manufacturer: "",
     description: "",
+    rxnormId: "",
+    batchNumber: "",
+    quantity: 0,
+    expiryDate: null,
+    unitPrice: 0
   });
   const [medicineSuggestions, setMedicineSuggestions] = useState([]);
-  const [selectedMedicine, setSelectedMedicine] = useState(null);
-  const [editingMedicine, setEditingMedicine] = useState(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   useEffect(() => {
     fetchMedicines();
@@ -73,17 +84,55 @@ const MedicineList = () => {
       setMedicines(medicinesList);
     } catch (error) {
       toast.error("Error fetching medicines");
+      console.error("Error fetching medicines:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateStock = async (medicineId, newStock) => {
+  const handleUpdateStock = async (medicineId) => {
     try {
-      await updateMedicineStock(medicineId, { stockQuantity: newStock });
+      setSelectedMedicine(medicineId);
+      const response = await getMedicineStock(medicineId);
+      setStockDetails(response.data.stockDetails || []);
+      setOpenStockDialog(true);
+    } catch (error) {
+      toast.error("Error fetching stock details");
+      console.error("Error fetching stock details:", error);
+    }
+  };
+
+  const handleAddStock = async () => {
+    if (!selectedMedicine) return;
+    
+    try {
+      if (!newMedicine.batchNumber || !newMedicine.quantity || !newMedicine.expiryDate || !newMedicine.unitPrice) {
+        toast.error("Please fill all required fields");
+        return;
+      }
+      
+      await updateMedicineStock(selectedMedicine, {
+        batchNumber: newMedicine.batchNumber,
+        quantity: newMedicine.quantity,
+        expiryDate: newMedicine.expiryDate,
+        unitPrice: newMedicine.unitPrice
+      });
+      
+      toast.success("Stock updated successfully");
+      setOpenStockDialog(false);
       fetchMedicines();
+      
+      // Reset stock fields
+      setNewMedicine({
+        ...newMedicine,
+        batchNumber: "",
+        quantity: 0,
+        expiryDate: null,
+        unitPrice: 0
+      });
     } catch (error) {
       toast.error("Error updating stock");
+      console.error("Error updating stock:", error);
     }
   };
 
@@ -94,33 +143,29 @@ const MedicineList = () => {
       fetchMedicines(); // Refresh the list
     } catch (error) {
       toast.error("Error deleting medicine");
+      console.error("Error deleting medicine:", error);
     }
   };
 
   const handleAddMedicine = async (e) => {
     e.preventDefault();
     try {
-      const stockType = newMedicine.medicineType === 'tablet' ? 'strip' : 
-                       newMedicine.medicineType === 'syrup' ? 'bottle' : 'unit';
+      if (!newMedicine.name || !newMedicine.medicineType || !newMedicine.batchNumber || 
+          !newMedicine.quantity || !newMedicine.expiryDate || !newMedicine.unitPrice) {
+        toast.error("Please fill all required fields");
+        return;
+      }
       
       const medicineData = {
         name: newMedicine.name,
         medicineType: newMedicine.medicineType,
         manufacturer: newMedicine.manufacturer,
         description: newMedicine.description,
-        price: newMedicine.price,
-        genericName: newMedicine.genericName,
-        brandName: newMedicine.brandName,
-        dosageForm: newMedicine.dosageForm,
-        strength: newMedicine.strength,
         rxnormId: newMedicine.rxnormId,
-        stock: {
-          batchNumber: newMedicine.stock?.batchNumber,
-          quantity: newMedicine.stock?.quantity,
-          expiryDate: newMedicine.stock?.expiryDate,
-          unitsPerPack: newMedicine.stock?.unitsPerPack,
-          type: stockType
-        }
+        batchNumber: newMedicine.batchNumber,
+        quantity: newMedicine.quantity,
+        expiryDate: newMedicine.expiryDate,
+        unitPrice: newMedicine.unitPrice
       };
 
       await addMedicine(medicineData);
@@ -128,21 +173,19 @@ const MedicineList = () => {
       setNewMedicine({
         name: "",
         medicineType: "tablet",
-        stock: {
-          quantity: 0,
-          unitsPerPack: 0,
-          batchNumber: "",
-          expiryDate: "",
-          type: "strip"
-        },
-        price: 0,
         manufacturer: "",
         description: "",
+        rxnormId: "",
+        batchNumber: "",
+        quantity: 0,
+        expiryDate: null,
+        unitPrice: 0
       });
       setOpenDialog(false);
       fetchMedicines();
     } catch (error) {
       toast.error(error.message || "Error adding medicine");
+      console.error("Error adding medicine:", error);
     }
   };
 
@@ -153,200 +196,158 @@ const MedicineList = () => {
     }
     
     try {
+      setLoadingSuggestions(true);
       const response = await getMedicineSuggestions(searchTerm);
       setMedicineSuggestions(response.suggestions || []);
     } catch (error) {
-      // Don't show toast for search errors
       console.error('Error fetching medicine suggestions:', error);
       setMedicineSuggestions([]); // Reset suggestions on error
+    } finally {
+      setLoadingSuggestions(false);
     }
   };
 
-  const handleMedicineSelect = (medicine) => {
-    if (medicine) {
-      setNewMedicine({
-        ...newMedicine,
-        name: medicine.name,
-        genericName: medicine.genericName,
-        brandName: medicine.brandName,
-        dosageForm: medicine.dosageForm,
-        strength: medicine.strength,
-        rxnormId: medicine.rxnormId,
-        stock: {
-          ...newMedicine.stock,
-          type: newMedicine.medicineType === 'tablet' ? 'strip' : 
-                newMedicine.medicineType === 'syrup' ? 'bottle' : 'unit'
-        }
-      });
-    }
-    setSelectedMedicine(medicine);
-  };
-
-  const filteredMedicines = medicines.filter(medicine => 
-    (medicine?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     medicine?.manufacturer?.toLowerCase().includes(searchTerm.toLowerCase())) ?? false
-  );
-
-  const renderMedicineStock = (medicine) => {
-    const stockType = medicine.medicineType === 'tablet' ? 'strips' :
-                     medicine.medicineType === 'syrup' ? 'bottles' : 'units';
+  const handleSuggestionSelect = (suggestion) => {
+    if (!suggestion) return;
     
-    const stockArray = medicine.stockQuantity[stockType] || [];
-    const totalStock = stockArray.reduce((total, batch) => total + batch.quantity, 0);
+    setSelectedSuggestion(suggestion);
+    setNewMedicine({
+      ...newMedicine,
+      name: suggestion.name,
+      manufacturer: suggestion.manufacturer || 'Unknown',
+      rxnormId: suggestion.rxnormId || ''
+    });
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
     
-    return totalStock;
+    // Filter medicines locally for quick search
+    if (value.length > 0) {
+      const filteredMedicines = medicines.filter(med => 
+        med.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setMedicines(filteredMedicines);
+    } else {
+      fetchMedicines(); // Reset to full list when search is cleared
+    }
   };
 
-  const getMedicinePrice = (medicine) => {
-    if (!medicine.price) return 0;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewMedicine({
+      ...newMedicine,
+      [name]: value
+    });
     
-    switch (medicine.medicineType) {
-      case 'tablet':
-        return medicine.price.perStrip || 0;
-      case 'syrup':
-        return medicine.price.perBottle || 0;
-      default:
-        return medicine.price.perUnit || 0;
+    // If changing the name field, trigger medicine search
+    if (name === 'name') {
+      handleMedicineSearch(value);
     }
   };
 
-  const handleEditMedicine = async (medicineId) => {
-    try {
-      const response = await getMedicineDetails(medicineId);
-      
-      if (!response || !response.success || !response.data) {
-        throw new Error('Invalid response format');
-      }
-      
-      const medicineData = response.data;
-      
-      setEditingMedicine({
-        _id: medicineData._id,
-        name: medicineData.name,
-        medicineType: medicineData.medicineType,
-        manufacturer: medicineData.manufacturer,
-        description: medicineData.description,
-        price: getMedicinePrice(medicineData),
-        genericName: medicineData.genericName,
-        brandName: medicineData.brandName,
-        dosageForm: medicineData.dosageForm,
-        strength: medicineData.strength,
-        stockQuantity: medicineData.stockQuantity
-      });
-      
-      setEditDialogOpen(true);
-    } catch (error) {
-      console.error('Error fetching medicine details:', error);
-      toast.error(error.message || "Error fetching medicine details");
-    }
-  };
-
-  const handleEditSubmit = async () => {
-    try {
-      if (!editingMedicine || !editingMedicine._id) {
-        throw new Error('Invalid medicine data');
-      }
-
-      // Format the price object based on medicine type
-      const formattedPrice = {
-        perStrip: editingMedicine.medicineType === 'tablet' ? editingMedicine.price : undefined,
-        perBottle: editingMedicine.medicineType === 'syrup' ? editingMedicine.price : undefined,
-        perUnit: editingMedicine.medicineType === 'other' ? editingMedicine.price : undefined
-      };
-
-      const updateData = {
-        ...editingMedicine,
-        price: formattedPrice
-      };
-
-      await updateMedicine(editingMedicine._id, updateData);
-      toast.success("Medicine updated successfully");
-      setEditDialogOpen(false);
-      setEditingMedicine(null);
-      fetchMedicines();
-    } catch (error) {
-      console.error('Error updating medicine:', error);
-      toast.error(error.message || "Error updating medicine");
-    }
+  const handleDateChange = (date) => {
+    setNewMedicine({
+      ...newMedicine,
+      expiryDate: date
+    });
   };
 
   return (
-    <div className={styles.container}>
-      <PageTitle title="Medicine Inventory" />
-      <div className={styles.actionBar}>
-        <TextField
-          placeholder="Search medicines..."
-          variant="outlined"
-          size="small"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <Fab
-          color="primary"
-          aria-label="add"
-          onClick={() => setOpenDialog(true)}
-          size="medium"
-        >
-          <AddIcon />
-        </Fab>
+    <div className={styles.medicineListContainer}>
+      <div className={styles.header}>
+        <PageTitle>Medicine Inventory</PageTitle>
+        <div className={styles.actions}>
+          <TextField
+            placeholder="Search medicines..."
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className={styles.searchField}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <Fab
+            color="primary"
+            size="medium"
+            onClick={() => setOpenDialog(true)}
+            className={styles.addButton}
+          >
+            <AddIcon />
+          </Fab>
+        </div>
       </div>
 
-      <Grid container spacing={3}>
-        {medicines.map((medicine) => (
-          <Grid item xs={12} sm={6} md={4} key={medicine._id}>
-            <Card>
-              <div className={styles.medicineCard}>
-                <Typography variant="h6">{medicine.name}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Type: {medicine.medicineType}
-                </Typography>
+      {loading ? (
+        <div className={styles.loadingContainer}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <Grid container spacing={3} className={styles.medicineGrid}>
+          {medicines.length > 0 ? (
+            medicines.map((medicine) => (
+              <Grid item xs={12} sm={6} md={4} key={medicine._id}>
+                <Card className={styles.medicineCard}>
+                  <div className={styles.medicineHeader}>
+                    <Typography variant="h6" className={styles.medicineName}>
+                      {medicine.name}
+                    </Typography>
+                    <Chip 
+                      label={medicine.medicineType} 
+                      size="small" 
+                      color="primary" 
+                      variant="outlined"
+                    />
+                  </div>
+                  <div className={styles.medicineDetails}>
+                    <Typography variant="body2" color="textSecondary">
+                      Manufacturer: {medicine.manufacturer || "Unknown"}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Stock: {medicine.stockQuantity || 0} units
+                    </Typography>
+                  </div>
+                  <div className={styles.medicineActions}>
+                    <Tooltip title="Update Stock">
+                      <IconButton 
+                        onClick={() => handleUpdateStock(medicine._id)}
+                        size="small"
+                      >
+                        <InventoryIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton
+                        onClick={() => handleDeleteMedicine(medicine._id)}
+                        size="small"
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
+                </Card>
+              </Grid>
+            ))
+          ) : (
+            <Grid item xs={12}>
+              <Paper className={styles.noMedicines}>
+                <Typography variant="h6">No medicines found</Typography>
                 <Typography variant="body2">
-                  Stock: {renderMedicineStock(medicine)} {
-                    medicine.medicineType === 'tablet' ? 'strips' :
-                    medicine.medicineType === 'syrup' ? 'bottles' : 'units'
-                  }
+                  Add a new medicine to get started
                 </Typography>
-                <Typography variant="body2">
-                  Price: ₹{getMedicinePrice(medicine)}
-                </Typography>
-                <div className={styles.cardActions}>
-                  <Tooltip title="Edit Stock">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleUpdateStock(medicine._id)}
-                    >
-                      <InventoryIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Edit">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEditMedicine(medicine._id)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDeleteMedicine(medicine._id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </div>
-              </div>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+              </Paper>
+            </Grid>
+          )}
+        </Grid>
+      )}
 
       {/* Add Medicine Dialog */}
       <Dialog
@@ -356,284 +357,259 @@ const MedicineList = () => {
         fullWidth
       >
         <DialogTitle>Add New Medicine</DialogTitle>
-        <DialogContent dividers>
-          <Autocomplete
-            value={selectedMedicine}
-            onChange={(event, newValue) => handleMedicineSelect(newValue)}
-            options={medicineSuggestions}
-            getOptionLabel={(option) => option.name || ''}
-            isOptionEqualToValue={(option, value) => option.name === value.name}
-            onInputChange={(event, value) => {
-              if (event) {
-                handleMedicineSearch(value);
-              }
-            }}
-            loading={medicineSuggestions === null}
-            loadingText="Searching..."
-            noOptionsText="No medicines found"
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Search Medicine"
-                variant="outlined"
-                fullWidth
+        <DialogContent>
+          <form onSubmit={handleAddMedicine} className={styles.form}>
+            <Autocomplete
+              options={medicineSuggestions}
+              getOptionLabel={(option) => option.name}
+              loading={loadingSuggestions}
+              onChange={(event, newValue) => handleSuggestionSelect(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Medicine Name"
+                  name="name"
+                  value={newMedicine.name}
+                  onChange={handleInputChange}
+                  required
+                  fullWidth
+                  margin="normal"
+                  variant="outlined"
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {loadingSuggestions ? <CircularProgress color="inherit" size={20} /> : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+            
+            <TextField
+              label="Manufacturer"
+              name="manufacturer"
+              value={newMedicine.manufacturer}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+            />
+            
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Medicine Type</InputLabel>
+              <Select
+                name="medicineType"
+                value={newMedicine.medicineType}
+                onChange={handleInputChange}
+                label="Medicine Type"
                 required
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {medicineSuggestions === null ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
-                }}
+              >
+                <MenuItem value="tablet">Tablet</MenuItem>
+                <MenuItem value="capsule">Capsule</MenuItem>
+                <MenuItem value="liquid">Liquid</MenuItem>
+                <MenuItem value="injection">Injection</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
+              </Select>
+            </FormControl>
+            
+            <TextField
+              label="Description"
+              name="description"
+              value={newMedicine.description}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              multiline
+              rows={2}
+            />
+            
+            <TextField
+              label="Batch Number"
+              name="batchNumber"
+              value={newMedicine.batchNumber}
+              onChange={handleInputChange}
+              required
+              fullWidth
+              margin="normal"
+              variant="outlined"
+            />
+            
+            <TextField
+              label="Quantity"
+              name="quantity"
+              type="number"
+              value={newMedicine.quantity}
+              onChange={handleInputChange}
+              required
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              InputProps={{ inputProps: { min: 1 } }}
+            />
+            
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Expiry Date"
+                value={newMedicine.expiryDate}
+                onChange={handleDateChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    required
+                    fullWidth
+                    margin="normal"
+                    variant="outlined"
+                  />
+                )}
               />
-            )}
-            renderOption={(props, option) => (
-              <li {...props}>
-                <div>
-                  <Typography variant="body1">{option.name}</Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    {option.genericName} • {option.dosageForm} • {option.strength}
-                  </Typography>
-                </div>
-              </li>
-            )}
-          />
-          
-          <TextField
-            select
-            label="Medicine Type"
-            value={newMedicine.medicineType}
-            onChange={(e) => setNewMedicine({ 
-              ...newMedicine, 
-              medicineType: e.target.value 
-            })}
-            fullWidth
-            margin="dense"
-            required
-          >
-            <MenuItem value="tablet">Tablet</MenuItem>
-            <MenuItem value="syrup">Syrup</MenuItem>
-            <MenuItem value="injection">Injection</MenuItem>
-            <MenuItem value="other">Other</MenuItem>
-          </TextField>
-
-          <TextField
-            label={`Quantity (${newMedicine.medicineType === 'tablet' ? 'Strips' : 
-              newMedicine.medicineType === 'syrup' ? 'Bottles' : 'Units'})`}
-            type="number"
-            value={newMedicine.stock?.quantity || ''}
-            onChange={(e) => setNewMedicine({
-              ...newMedicine,
-              stock: {
-                ...newMedicine.stock,
-                quantity: parseInt(e.target.value)
-              }
-            })}
-            fullWidth
-            required
-            margin="dense"
-          />
-
-          <TextField
-            label="Units per Pack"
-            type="number"
-            value={newMedicine.stock?.unitsPerPack || ''}
-            onChange={(e) => setNewMedicine({
-              ...newMedicine,
-              stock: {
-                ...newMedicine.stock,
-                unitsPerPack: parseInt(e.target.value)
-              }
-            })}
-            fullWidth
-            required
-            margin="dense"
-            helperText={newMedicine.medicineType === 'tablet' ? 'Tablets per strip' : 
-              newMedicine.medicineType === 'syrup' ? 'ml per bottle' : 'units per pack'}
-          />
-
-          <TextField
-            label="Batch Number"
-            value={newMedicine.stock?.batchNumber || ''}
-            onChange={(e) => setNewMedicine({
-              ...newMedicine,
-              stock: {
-                ...newMedicine.stock,
-                batchNumber: e.target.value
-              }
-            })}
-            fullWidth
-            required
-            margin="dense"
-          />
-
-          <TextField
-            label="Expiry Date"
-            type="date"
-            value={newMedicine.stock?.expiryDate || ''}
-            onChange={(e) => setNewMedicine({
-              ...newMedicine,
-              stock: {
-                ...newMedicine.stock,
-                expiryDate: e.target.value
-              }
-            })}
-            fullWidth
-            required
-            margin="dense"
-            InputLabelProps={{ shrink: true }}
-          />
-
-          <TextField
-            label="Medicine Name"
-            value={newMedicine.name}
-            onChange={(e) =>
-              setNewMedicine({ ...newMedicine, name: e.target.value })
-            }
-            fullWidth
-            required
-            margin="dense"
-          />
-          <TextField
-            label="Stock Quantity"
-            type="number"
-            value={newMedicine.stockQuantity}
-            onChange={(e) =>
-              setNewMedicine({
-                ...newMedicine,
-                stockQuantity: parseInt(e.target.value),
-              })
-            }
-            fullWidth
-            required
-            margin="dense"
-          />
-          <TextField
-            label="Price"
-            type="number"
-            value={newMedicine.price}
-            onChange={(e) =>
-              setNewMedicine({
-                ...newMedicine,
-                price: parseFloat(e.target.value),
-              })
-            }
-            fullWidth
-            required
-            margin="dense"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">₹</InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            label="Manufacturer"
-            value={newMedicine.manufacturer}
-            onChange={(e) =>
-              setNewMedicine({ ...newMedicine, manufacturer: e.target.value })
-            }
-            fullWidth
-            margin="dense"
-          />
-          <TextField
-            label="Description"
-            multiline
-            rows={3}
-            value={newMedicine.description}
-            onChange={(e) =>
-              setNewMedicine({ ...newMedicine, description: e.target.value })
-            }
-            fullWidth
-            margin="dense"
-          />
+            </LocalizationProvider>
+            
+            <TextField
+              label="Unit Price"
+              name="unitPrice"
+              type="number"
+              value={newMedicine.unitPrice}
+              onChange={handleInputChange}
+              required
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              InputProps={{ 
+                inputProps: { min: 0, step: 0.01 },
+                startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+              }}
+            />
+          </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="inherit">
-            Cancel
-          </Button>
-          <Button onClick={handleAddMedicine} color="primary">
+          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+          <Button onClick={handleAddMedicine} styles={{ btnPrimary: true }}>
             Add Medicine
           </Button>
         </DialogActions>
       </Dialog>
 
+      {/* Stock Details Dialog */}
       <Dialog
-        open={editDialogOpen}
-        onClose={() => setEditDialogOpen(false)}
-        maxWidth="sm"
+        open={openStockDialog}
+        onClose={() => setOpenStockDialog(false)}
+        maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Edit Medicine</DialogTitle>
-        <DialogContent dividers>
-          {editingMedicine && (
-            <>
+        <DialogTitle>Medicine Stock Details</DialogTitle>
+        <DialogContent>
+          <div className={styles.stockDialogContent}>
+            <Typography variant="h6" gutterBottom>
+              Current Stock
+            </Typography>
+            
+            {stockDetails.length > 0 ? (
+              <TableContainer component={Paper} className={styles.stockTable}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Batch Number</TableCell>
+                      <TableCell>Quantity</TableCell>
+                      <TableCell>Expiry Date</TableCell>
+                      <TableCell>Purchase Date</TableCell>
+                      <TableCell>Unit Price</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {stockDetails.map((batch, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{batch.batchNumber}</TableCell>
+                        <TableCell>{batch.quantity}</TableCell>
+                        <TableCell>
+                          {new Date(batch.expiryDate).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(batch.purchaseDate).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>₹{batch.unitPrice.toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Typography variant="body2" color="textSecondary">
+                No stock details available
+              </Typography>
+            )}
+            
+            <Typography variant="h6" gutterBottom className={styles.addStockTitle}>
+              Add New Stock
+            </Typography>
+            
+            <div className={styles.addStockForm}>
               <TextField
-                label="Medicine Name"
-                value={editingMedicine.name}
-                onChange={(e) => setEditingMedicine({
-                  ...editingMedicine,
-                  name: e.target.value
-                })}
+                label="Batch Number"
+                name="batchNumber"
+                value={newMedicine.batchNumber}
+                onChange={handleInputChange}
+                required
                 fullWidth
-                margin="dense"
+                margin="normal"
+                variant="outlined"
               />
+              
               <TextField
-                label="Price"
+                label="Quantity"
+                name="quantity"
                 type="number"
-                value={getMedicinePrice(editingMedicine)}
-                onChange={(e) => {
-                  const price = {
-                    perStrip: editingMedicine.medicineType === 'tablet' ? parseFloat(e.target.value) : undefined,
-                    perBottle: editingMedicine.medicineType === 'syrup' ? parseFloat(e.target.value) : undefined,
-                    perUnit: editingMedicine.medicineType === 'other' ? parseFloat(e.target.value) : undefined
-                  };
-                  setEditingMedicine({
-                    ...editingMedicine,
-                    price
-                  });
-                }}
+                value={newMedicine.quantity}
+                onChange={handleInputChange}
+                required
                 fullWidth
-                margin="dense"
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">₹</InputAdornment>
-                }}
+                margin="normal"
+                variant="outlined"
+                InputProps={{ inputProps: { min: 1 } }}
               />
+              
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  label="Expiry Date"
+                  value={newMedicine.expiryDate}
+                  onChange={handleDateChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      required
+                      fullWidth
+                      margin="normal"
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </LocalizationProvider>
+              
               <TextField
-                label="Manufacturer"
-                value={editingMedicine.manufacturer}
-                onChange={(e) => setEditingMedicine({
-                  ...editingMedicine,
-                  manufacturer: e.target.value
-                })}
+                label="Unit Price"
+                name="unitPrice"
+                type="number"
+                value={newMedicine.unitPrice}
+                onChange={handleInputChange}
+                required
                 fullWidth
-                margin="dense"
+                margin="normal"
+                variant="outlined"
+                InputProps={{ 
+                  inputProps: { min: 0, step: 0.01 },
+                  startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                }}
               />
-              <TextField
-                label="Description"
-                multiline
-                rows={3}
-                value={editingMedicine.description}
-                onChange={(e) => setEditingMedicine({
-                  ...editingMedicine,
-                  description: e.target.value
-                })}
-                fullWidth
-                margin="dense"
-              />
-            </>
-          )}
+            </div>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} color="inherit">
-            Cancel
-          </Button>
-          <Button onClick={handleEditSubmit} color="primary">
-            Save Changes
+          <Button onClick={() => setOpenStockDialog(false)}>Cancel</Button>
+          <Button onClick={handleAddStock} styles={{ btnPrimary: true }}>
+            Add Stock
           </Button>
         </DialogActions>
       </Dialog>

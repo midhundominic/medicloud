@@ -21,6 +21,7 @@ export const getMedicinesList = async () => {
     const response = await apiClient.get('/medicines/list');
     return response.data;
   } catch (error) {
+    console.error('Error fetching medicines list:', error);
     throw error;
   }
 };
@@ -31,6 +32,7 @@ export const addMedicine = async (medicineData) => {
     const response = await apiClient.post('/medicines/add', medicineData);
     return response.data;
   } catch (error) {
+    console.error('Error adding medicine:', error);
     throw error;
   }
 };
@@ -41,16 +43,18 @@ export const updateMedicineStock = async (medicineId, stockData) => {
     const response = await apiClient.patch(`/medicines/stock/${medicineId}`, stockData);
     return response.data;
   } catch (error) {
+    console.error('Error updating medicine stock:', error);
     throw error;
   }
 };
 
-// Delete medicine
-export const deleteMedicine = async (medicineId) => {
+// Get medicine stock details
+export const getMedicineStock = async (medicineId) => {
   try {
-    const response = await apiClient.delete(`/medicines/${medicineId}`);
+    const response = await apiClient.get(`/medicines/${medicineId}/stock`);
     return response.data;
   } catch (error) {
+    console.error('Error fetching medicine stock:', error);
     throw error;
   }
 };
@@ -81,12 +85,13 @@ export const getMedicineDetails = async (medicineId) => {
   }
 };
 
-// Get medicine stock details
-export const getMedicineStock = async (medicineId) => {
+// Delete medicine
+export const deleteMedicine = async (medicineId) => {
   try {
-    const response = await apiClient.get(`/medicines/${medicineId}/stock`);
+    const response = await apiClient.delete(`/medicines/${medicineId}`);
     return response.data;
   } catch (error) {
+    console.error('Error deleting medicine:', error);
     throw error;
   }
 };
@@ -97,6 +102,7 @@ export const updateMedicine = async (medicineId, medicineData) => {
     const response = await apiClient.put(`/medicines/${medicineId}`, medicineData);
     return response.data;
   } catch (error) {
+    console.error('Error updating medicine:', error);
     throw error;
   }
 };

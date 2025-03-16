@@ -161,3 +161,13 @@ export const deleteTest = async (testId) => {
   }
 };
 
+export const getPrescriptionById = async (prescriptionId) => {
+  try {
+    const response = await apiClient.get(`/prescriptions/${prescriptionId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching prescription details", error);
+    throw error;
+  }
+};
+

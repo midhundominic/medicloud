@@ -1,101 +1,212 @@
 .recordsContainer {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .recordAccordion {
-    margin-bottom: 16px !important;
-    border-radius: 8px !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-  }
-  
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.recordAccordion {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.summaryContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px 0;
+}
+
+.prescriptionDetails {
+  padding: 16px 0;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section h3 {
+  margin-bottom: 12px;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.section li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.testItem {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.testActions {
+  display: flex;
+  gap: 8px;
+}
+
+.pendingResult {
+  color: #f57c00;
+  font-style: italic;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.downloadBtn {
+  background-color: #4caf50;
+}
+
+.viewContent {
+  margin-top: 16px;
+}
+
+.pdfViewer {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+/* New styles for payment required section */
+.paymentRequired {
+  padding: 24px;
+  text-align: center;
+  background-color: #fff9f9;
+  border-radius: 8px;
+  border: 1px dashed #f44336;
+}
+
+.paymentButton {
+  margin-top: 16px !important;
+}
+
+.paymentChip {
+  margin-left: auto !important;
+}
+
+/* Payment Dialog Styles */
+.paymentDialogContent {
+  padding: 16px 0;
+}
+
+.paymentDialogContent h3 {
+  margin: 16px 0 8px;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.medicinesSection, .testsSection {
+  margin-bottom: 20px;
+}
+
+.medicinesList, .testsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.medicineItem, .testItem {
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.medicineName {
+  font-weight: 500;
+}
+
+.medicineDetails {
+  color: #666;
+  font-size: 0.9em;
+}
+
+@media (max-width: 600px) {
   .summaryContent {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0 20px;
-  }
-  
-  .prescriptionDetails {
-    padding: 20px;
-  }
-  
-  .section {
-    margin-bottom: 24px;
-  }
-  
-  .section h3 {
-    color: #2c3e50;
-    margin-bottom: 12px;
-  }
-  
-  .section ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .section li {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 8px;
-    align-items: center;
-  }
-  
-  .testItem {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 16px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    margin-bottom: 8px;
-  }
-  
-  .testActions {
-    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
-  
-  .pendingResult {
-    color: #e74c3c;
-    font-style: italic;
+
+  .testItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 
-  .actionButtons {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 16px;
-  }
-  
-  .downloadBtn {
-    background-color: #2196f3 !important;
-  }
-  
-  .viewContent {
-    margin-top: 16px;
-  }
-  
-  .pdfViewer {
-    border: none;
+  .testActions {
     width: 100%;
-    height: 500px;
+    justify-content: flex-start;
   }
+}
 
-  @media (max-width: 600px) {
-    .summaryContent {
-      flex-direction: column;
-      gap: 8px;
-    }
+/* Delivery status styles */
+.deliveryStatusContainer {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+}
 
-    .testItem {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-    }
+.deliveryStatus {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
-    .testActions {
-      width: 100%;
-      justify-content: flex-start;
-    }
-  }
+.deliveryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statusLabel {
+  font-size: 16px;
+}
+
+.deliveryDate {
+  font-size: 14px;
+  color: #666;
+}
+
+.deliveryNote {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+}
+
+.deliveredIcon {
+  color: #4caf50;
+  font-size: 32px !important;
+}
+
+.shippedIcon {
+  color: #2196f3;
+  font-size: 32px !important;
+}
+
+.processingIcon {
+  color: #ff9800;
+  font-size: 32px !important;
+}
+
+.pendingIcon {
+  color: #9e9e9e;
+  font-size: 32px !important;
+}
