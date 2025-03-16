@@ -30,6 +30,7 @@ const biometricController = require("../controllers/biometricController");
 const prescriptionRecognition = require('../controllers/prescriptionRecognition');
 const { prescriptionUpload } = require('../middleware/upload');
 const healthAssistantControllers = require('../controllers/healthAssistantControllers');
+const prescriptionPaymentController = require('../controllers/prescriptionPaymentController');
 
 //patient
 
@@ -223,6 +224,17 @@ router.post('/health/chat',healthAssistantControllers.chatWithAI);
 router.post('/consultation/appointments/:appointmentId/start-consultation', appointmentControllers.startConsultation);
 router.post('/consultation/appointments/:appointmentId/join-consultation', appointmentControllers.joinConsultation);
 router.post('/consultation/appointments/:appointmentId/end-consultation', appointmentControllers.endConsultation);
+
+//precription Payment
+router.post('/prescription/payments/create', authMiddleware, prescriptionPaymentController.createPrescriptionPayment);
+router.post('/prescription/payments/verify', prescriptionPaymentController.verifyPrescriptionPayment);
+router.get('/prescription/payments/status/:prescriptionId', prescriptionPaymentController.getPrescriptionPaymentStatus);
+router.get('/prescription/payments/patient/:patientId', authMiddleware, prescriptionPaymentController.getPatientPrescriptionPayments);
+router.get('/prescriptions/:prescriptionId', authMiddleware, prescriptionControllers.getPrescriptionById);
+
+//delivery status
+router.get('/prescription/payments', authMiddleware, prescriptionPaymentController.getAllPrescriptionPayments);
+router.put('/prescription/payments/:id/delivery-status', authMiddleware, prescriptionPaymentController.updateDeliveryStatus);
 
 
 module.exports = router;

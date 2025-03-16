@@ -396,3 +396,34 @@ exports.getPrescriptionByAppointment = async (req, res) => {
     });
   }
 };
+
+exports.getPrescriptionById = async (req, res) => {
+  try {
+    const { prescriptionId } = req.params;
+    
+    const prescription = await Prescription.findById(prescriptionId)
+      .populate('patientId', 'name email')
+      .populate('doctorId', 'firstName lastName specialization')
+      .populate('medicines.medicine')
+      .populate('tests.resultId');
+    
+    if (!prescription) {
+      return res.status(404).json({
+        success: false,
+        message: 'Prescription not found'
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: prescription
+    });
+  } catch (error) {
+    console.error('Error getting prescription details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error getting prescription details',
+      error: error.message
+    });
+  }
+};

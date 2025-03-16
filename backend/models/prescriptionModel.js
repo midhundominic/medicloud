@@ -53,7 +53,9 @@ const prescriptionSchema = new mongoose.Schema({
   createdAt: { 
     type: Date, 
     default: Date.now 
-  }
+  },
+  isPaid: { type: Boolean, default: false },
+  paymentDate: { type: Date }
 });
 
 module.exports = mongoose.model('Prescription', prescriptionSchema);
