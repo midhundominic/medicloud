@@ -188,7 +188,7 @@ router.post('/pharmacist-registration',laboratoryControllers.registerLaboratory)
 router.get('/laboratory-view',laboratoryControllers.getAllLaboratory);
 
 router.get('/laboratory/pending-tests', laboratoryControllers.getPendingTests);
-router.post('/laboratory/upload-result/userId',authMiddleware,testResultUpload, laboratoryControllers.uploadTestResult);
+router.post('/laboratory/upload-result/userId',testResultUpload, laboratoryControllers.uploadTestResult);
 router.put('/laboratory/results/:resultId', authMiddleware,testResultUpload,laboratoryControllers.updateTestResult);
 router.get('/laboratory/completed-tests', laboratoryControllers.getCompletedTests);
 router.get('/download-result/:resultId', laboratoryControllers.downloadTestResult);
