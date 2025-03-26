@@ -81,10 +81,10 @@ const getPendingTests = async (req, res) => {
 
 const uploadTestResult = async (req, res) => {
   try {
-    // Get user from token
-    const userId = req.userId || req.user?.userId
+    // Get userId from params instead of token/middleware
+    const userId = req.params.userId;
     if (!userId) {
-      return res.status(401).json({ message: 'Authentication required' });
+      return res.status(401).json({ message: 'User ID is required' });
     }
 
     if (!req.file) {
